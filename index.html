@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0c20" />
+    <meta name="description" content="《月影祕律》是一款原創四軌奇幻節奏遊戲。" />
+    <title>月影祕律｜Moonlit Arcana</title>
+  </head>
+  <body>
+    <div class="ambient-layer" aria-hidden="true">
+      <span class="ambient-orbit ambient-orbit--one"></span>
+      <span class="ambient-orbit ambient-orbit--two"></span>
+      <span class="ambient-sigil">✦</span>
+    </div>
+
+    <main id="app" class="app-shell">
+      <section id="menu-screen" class="screen menu-screen" aria-labelledby="game-title">
+        <header class="brand-lockup">
+          <p class="eyebrow">Arcana Atelier 呈獻</p>
+          <h1 id="game-title"><span>月影</span><span>祕律</span></h1>
+          <p class="brand-en">Moonlit Arcana</p>
+          <p class="brand-tagline">跟隨月光，讓每一道符文準時甦醒。</p>
+        </header>
+
+        <div class="menu-grid">
+          <section id="song-library" class="song-library" aria-labelledby="song-library-title">
+            <div class="song-library__heading">
+              <div>
+                <p class="eyebrow">Song Select</p>
+                <h2 id="song-library-title">曲目星圖</h2>
+              </div>
+              <span id="song-count">0 首可遊玩</span>
+            </div>
+            <div id="song-options" class="song-options" role="group" aria-labelledby="song-library-title"></div>
+            <p id="song-selection-status" class="sr-only" aria-live="polite"></p>
+          </section>
+
+          <article class="song-card" aria-labelledby="song-card-title">
+            <div class="song-art" aria-hidden="true">
+              <div class="song-art__moon"></div>
+              <span class="song-art__rune song-art__rune--a">◇</span>
+              <span class="song-art__rune song-art__rune--b">△</span>
+              <span class="song-art__rune song-art__rune--c">○</span>
+              <div class="song-art__staff"><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="song-card__content">
+              <p id="song-chapter" class="song-number">第一章 · 發條月祭</p>
+              <h2 id="song-card-title">月光齒輪巡遊</h2>
+              <p id="song-title-en" class="song-title-en">Moonlit Gear Parade</p>
+              <div class="song-meta" aria-label="曲目資訊">
+                <span><small>BPM</small><b id="song-bpm" class="dynamic-meta">130</b></span>
+                <span><small>調性</small><b id="song-key" class="dynamic-meta">D minor</b></span>
+                <span><small>難度</small><b id="song-difficulty" class="dynamic-meta">入門 Lv.1</b></span>
+                <span><small>長度</small><b id="song-duration" class="dynamic-meta">1:17</b></span>
+              </div>
+              <fieldset id="difficulty-selector" class="difficulty-selector" aria-labelledby="difficulty-label">
+                <legend id="difficulty-label">選擇試煉等級</legend>
+                <div class="difficulty-options">
+                  <button class="difficulty-option is-selected" type="button" data-difficulty-level="1" aria-pressed="true">
+                    <span class="difficulty-rune" aria-hidden="true">◇</span>
+                    <span><strong>Lv.1</strong><small>入門</small></span>
+                  </button>
+                  <button class="difficulty-option" type="button" data-difficulty-level="2" aria-pressed="false">
+                    <span class="difficulty-rune" aria-hidden="true">△</span>
+                    <span><strong>Lv.2</strong><small>學徒</small></span>
+                  </button>
+                  <button class="difficulty-option" type="button" data-difficulty-level="3" aria-pressed="false">
+                    <span class="difficulty-rune" aria-hidden="true">✦</span>
+                    <span><strong>Lv.3</strong><small>熟練</small></span>
+                  </button>
+                  <button class="difficulty-option" type="button" data-difficulty-level="4" aria-pressed="false">
+                    <span class="difficulty-rune" aria-hidden="true">◆</span>
+                    <span><strong>Lv.4</strong><small>專家</small></span>
+                  </button>
+                </div>
+                <p id="difficulty-description" aria-live="polite">104 顆 · 四分音符為主 · 無雙押</p>
+              </fieldset>
+              <p class="song-source"><span aria-hidden="true"></span><b id="song-source-label">正式原創音樂 · tingyusaiart</b></p>
+            </div>
+          </article>
+
+          <aside class="menu-panel">
+            <div class="record-panel">
+              <p class="panel-label">本機最佳紀錄 · <span id="record-difficulty">入門 Lv.1</span></p>
+              <div class="record-grid" aria-live="polite">
+                <div><strong id="best-grade">—</strong><span>評級</span></div>
+                <div><strong id="best-score">—</strong><span>分數</span></div>
+                <div><strong id="best-accuracy">—</strong><span>準確率</span></div>
+              </div>
+            </div>
+
+            <div class="settings-panel" aria-label="遊戲設定">
+              <label class="setting-row" for="volume-slider">
+                <span>總音量</span>
+                <input id="volume-slider" type="range" min="0" max="1" step="0.05" value="0.8" />
+              </label>
+              <label class="setting-row" for="speed-select">
+                <span>符文速度</span>
+                <select id="speed-select">
+                  <option value="0.75">×0.75</option>
+                  <option value="1" selected>×1.00</option>
+                  <option value="1.25">×1.25</option>
+                  <option value="1.5">×1.50</option>
+                  <option value="1.75">×1.75</option>
+                </select>
+              </label>
+              <label class="setting-toggle" for="reduced-motion">
+                <input id="reduced-motion" type="checkbox" />
+                <span class="toggle-mark" aria-hidden="true"></span>
+                <span>降低動畫</span>
+              </label>
+            </div>
+
+            <button id="start-button" class="primary-button" type="button">
+              <span class="primary-button__star" aria-hidden="true">✦</span>
+              <span data-button-label>開始月光試煉</span>
+              <span class="primary-button__key">SPACE</span>
+            </button>
+            <p class="control-hint">方向鍵或 D F J K · P 暫停 · R 重新開始</p>
+          </aside>
+        </div>
+      </section>
+
+      <section id="game-screen" class="screen game-screen" aria-label="節奏遊戲" hidden>
+        <header class="game-header">
+          <div class="game-song-label">
+            <span id="game-song-title">月光齒輪巡遊</span>
+            <small><span id="game-difficulty">入門 Lv.1</span> · <span id="game-song-bpm">130</span> BPM</small>
+          </div>
+          <div class="progress-cluster">
+            <div class="progress-track" aria-label="歌曲進度"><span id="hud-progress-fill"></span></div>
+            <span id="hud-time">1:17</span>
+          </div>
+          <button id="pause-button" class="icon-button" type="button" aria-label="暫停遊戲">Ⅱ</button>
+        </header>
+
+        <div class="play-layout">
+          <aside class="hud-card hud-card--left">
+            <p class="hud-label">SCORE</p>
+            <strong id="hud-score" class="hud-score">000,000</strong>
+            <div class="hud-divider"></div>
+            <p class="hud-label">ACCURACY</p>
+            <strong id="hud-accuracy" class="hud-value">100.00%</strong>
+            <div class="gauge-block">
+              <div class="gauge-label"><span>魔力</span><b id="hud-gauge-value">50%</b></div>
+              <div class="gauge-track"><span id="hud-gauge-fill" style="width: 50%"></span></div>
+            </div>
+          </aside>
+
+          <div class="canvas-frame">
+            <canvas id="game-canvas" width="600" height="720" aria-label="四軌節奏遊戲區"></canvas>
+            <div id="countdown-overlay" class="countdown-overlay" aria-live="assertive" hidden>3</div>
+            <div class="canvas-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          </div>
+
+          <aside class="hud-card hud-card--right">
+            <p class="hud-label">COMBO</p>
+            <strong id="hud-combo" class="combo-number">0</strong>
+            <p class="combo-caption">MAX <span id="hud-max-combo">0</span></p>
+            <div class="judgment-readout" aria-live="polite">
+              <strong id="hud-judgment">READY</strong>
+              <span id="hud-timing">跟著鼓點施法</span>
+            </div>
+          </aside>
+        </div>
+
+        <div id="touch-controls" class="touch-controls" aria-label="觸控方向鍵">
+          <button type="button" data-lane="left" aria-label="左方向"><span>←</span><small>D</small></button>
+          <button type="button" data-lane="down" aria-label="下方向"><span>↓</span><small>F</small></button>
+          <button type="button" data-lane="up" aria-label="上方向"><span>↑</span><small>J</small></button>
+          <button type="button" data-lane="right" aria-label="右方向"><span>→</span><small>K</small></button>
+        </div>
+      </section>
+
+      <section id="result-screen" class="screen result-screen" aria-labelledby="result-title" hidden>
+        <div class="result-card">
+          <div class="result-heading">
+            <p id="result-status" class="result-status">試煉完成</p>
+            <h2 id="result-title">月光齒輪巡遊</h2>
+            <p><span id="result-song-en">Moonlit Gear Parade</span> · <span id="result-difficulty">入門 Lv.1</span></p>
+          </div>
+          <div id="result-grade" class="result-grade">S</div>
+          <div id="new-record" class="new-record" hidden>NEW RECORD</div>
+
+          <div class="result-primary">
+            <div><span>最終分數</span><strong id="result-score">0</strong></div>
+            <div><span>準確率</span><strong id="result-accuracy">0.00%</strong></div>
+            <div><span>最大 Combo</span><strong id="result-combo">0</strong></div>
+            <div><span>平均偏移</span><strong id="result-offset">0 ms</strong></div>
+          </div>
+
+          <div class="judgment-grid">
+            <div class="judgment--marvelous"><span>Marvelous</span><strong id="result-marvelous">0</strong></div>
+            <div class="judgment--perfect"><span>Perfect</span><strong id="result-perfect">0</strong></div>
+            <div class="judgment--great"><span>Great</span><strong id="result-great">0</strong></div>
+            <div class="judgment--good"><span>Good</span><strong id="result-good">0</strong></div>
+            <div class="judgment--miss"><span>Miss</span><strong id="result-miss">0</strong></div>
+          </div>
+
+          <p id="result-badge" class="result-badge">魔力尚存，試煉通過。</p>
+          <div class="result-actions">
+            <button id="result-menu-button" class="secondary-button" type="button">返回選曲</button>
+            <button id="replay-button" class="primary-button primary-button--compact" type="button">再奏一次</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="pause-overlay" class="modal-layer" role="dialog" aria-modal="true" aria-labelledby="pause-title" hidden>
+      <div class="pause-card">
+        <p class="eyebrow">時間已凝結</p>
+        <h2 id="pause-title">月光暫歇</h2>
+        <p>恢復後會重新倒數三秒，譜面從原位置繼續。</p>
+        <label class="setting-row" for="pause-volume">
+          <span>總音量</span>
+          <input id="pause-volume" type="range" min="0" max="1" step="0.05" value="0.8" />
+        </label>
+        <label class="setting-row" for="pause-speed">
+          <span>符文速度</span>
+          <select id="pause-speed">
+            <option value="0.75">×0.75</option>
+            <option value="1">×1.00</option>
+            <option value="1.25">×1.25</option>
+            <option value="1.5">×1.50</option>
+            <option value="1.75">×1.75</option>
+          </select>
+        </label>
+        <div class="pause-actions">
+          <button id="quit-button" class="text-button" type="button">返回選曲</button>
+          <button id="restart-button" class="secondary-button" type="button">重新開始</button>
+          <button id="resume-button" class="primary-button primary-button--compact" type="button">繼續試煉</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="error-toast" class="error-toast" role="alert" hidden></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

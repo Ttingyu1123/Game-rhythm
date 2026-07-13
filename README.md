@@ -1,0 +1,112 @@
+# 月影祕律 Moonlit Arcana
+
+《月影祕律》是一款原創四軌奇幻節奏遊戲。曲目星圖目前收錄 4 首正式歌曲與 16 張固定譜面；譜面和 MP3 音樂共用 `AudioContext.currentTime`，畫面掉幀不會累積時間誤差。
+
+## 啟動
+
+需要 Node.js 20.19 以上版本。
+
+```powershell
+npm install
+npm run dev
+```
+
+開啟 Vite 顯示的本機網址。瀏覽器必須收到第一次按鍵或點擊後才能啟動音訊。
+
+其他指令：
+
+```powershell
+npm test
+npm run build
+npm run preview
+```
+
+## 操作
+
+| 功能 | 鍵盤 |
+|---|---|
+| 四軌符文 | `←` `↓` `↑` `→` 或 `D` `F` `J` `K` |
+| 開始／確認 | `Space` 或 `Enter` |
+| 暫停／繼續 | `P` 或 `Escape` |
+| 暫停或結算時重玩 | `R` |
+
+觸控裝置可使用畫面下方四個按鈕，Pointer Events 允許雙指同時輸入。
+
+## 目前曲庫
+
+4 首歌曲皆由 tingyusaiart 創作，提供入門 Lv.1、學徒 Lv.2、熟練 Lv.3 與專家 Lv.4；進入選曲時預設為入門等級。
+
+| 曲目 | 風格 | BPM | 調性 | 時長 | 音訊 |
+|---|---|---:|---|---:|---|
+| 月光齒輪巡遊 Moonlit Gear Parade | 奇幻小調 | 130 | D minor | 1:17 | `main-theme.mp3` |
+| 搖擺嘉年華 Swing Carnival | 奇幻搖擺 | 111 | G major | 1:10 | `Swing_Carnival.mp3` |
+| 雲端漫舞 Dancing on a Cloud | 夢幻舞曲 | 127 | A minor | 2:34 | `Dancing_on_a_Cloud.mp3` |
+| 爪爪大遊行 Parade of Paws | 奇幻進行曲 | 100 | C major | 1:35 | `Parade_of_Paws.mp3` |
+
+各曲各級的音符數：
+
+| 曲目 | Lv.1 | Lv.2 | Lv.3 | Lv.4 |
+|---|---:|---:|---:|---:|
+| 月光齒輪巡遊 | 104 | 146 | 202 | 264 |
+| 搖擺嘉年華 | 88 | 128 | 174 | 236 |
+| 雲端漫舞 | 169 | 233 | 333 | 429 |
+| 爪爪大遊行 | 111 | 159 | 231 | 307 |
+
+譜面由固定規則建立，每次遊玩完全相同。較低等級的音符會保留在下一級，再逐級加入切分、短填充與雙押。歌曲模組位於 `src/data/songs/`；三首 Suno 新曲共用 `src/rhythm/TapChartFactory.js` 的十二分拍網格產生器。
+
+## 曲目星圖
+
+選曲畫面的「曲目星圖」由 `src/data/songCatalog.js` 產生。每首可玩歌曲都有獨立 ID、音訊、歌曲資訊、難度與譜面；最佳紀錄依 `songId + difficultyId` 分開保存。
+
+目前 4 首歌曲都可正式遊玩。切換曲目會同步更新歌曲資訊、難度與獨立紀錄，不會沿用上一首歌的音訊或譜面。
+
+### 加入下一首歌曲
+
+1. 把新 MP3 放進 `assets/music/`。
+2. 在 `src/data/songs/` 新增歌曲模組，填入曲名、作者、BPM、首拍偏移、長度、音訊 URL、難度與譜面工廠。
+3. 在 `src/data/songCatalog.js` 匯入歌曲，並加入 `SONG_CATALOG`。
+
+歌曲模組使用靜態 `new URL('音樂相對路徑', import.meta.url).href`，讓 Vite 在正式建置時複製並雜湊音訊。切換歌曲時，遊戲會停止舊音源、清除舊解碼資料並套用新時間軸，但會保留 AudioContext、音量與其他設定。
+
+## 判定
+
+| 判定 | 時間差 | 分數權重 | 準確率權重 |
+|---|---:|---:|---:|
+| Marvelous | ±30 ms | 1000 | 100% |
+| Perfect | ±55 ms | 900 | 95% |
+| Great | ±90 ms | 700 | 75% |
+| Good | ±140 ms | 400 | 45% |
+| Miss | 超過 ±140 ms | 0 | 0% |
+
+正值代表 Late，負值代表 Early。最終分數依整張譜面的最大分數正規化至 1,000,000。
+
+## 同步設計
+
+- 音訊開始時間由 `AudioContext` 預先排程。
+- MP3 只在第一次遊玩時載入並解碼為 `AudioBuffer`，後續重玩會重用已解碼音訊。
+- 倒數直接比較音訊時鐘，不使用連續 `setTimeout`。
+- 音符位置由 `hitTime - songTime` 每幀重新計算，不累加像素位移。
+- 暫停時保存精確歌曲 offset 並停止 source。
+- 恢復時建立新的 `AudioBufferSourceNode`，三秒倒數後從保存位置播放。
+- 自動 Miss、輸入判定和畫面位置使用相同歌曲時間。
+
+## 存檔
+
+`localStorage` 保存音量、符文速度、降低動畫設定與最佳紀錄。讀取損壞 JSON 時會回復安全預設值，不會阻止遊戲啟動。
+
+## 正式音樂
+
+正式音樂位於 `assets/music/`：
+
+```text
+assets/music/main-theme.mp3
+assets/music/Swing_Carnival.mp3
+assets/music/Dancing_on_a_Cloud.mp3
+assets/music/Parade_of_Paws.mp3
+```
+
+每首歌曲皆依音樂分析結果設定自己的 BPM、首拍偏移與時長，並針對主要段落建立固定譜面。音樂檔載入或解碼失敗時，遊戲會回到選曲畫面並顯示錯誤，不會悄悄改播其他歌曲。
+
+## 已知範圍
+
+目前曲庫收錄 4 首可玩歌曲，全部具有 Lv.1–Lv.4。長按音符、完整延遲校正、新手教學和偏移分析圖屬於後續階段。
