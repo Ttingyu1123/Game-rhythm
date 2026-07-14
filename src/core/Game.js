@@ -12,6 +12,16 @@ import { GameStateMachine } from './GameState.js';
 
 const nextPaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
+// Deep-link support: /?song=<id> preselects a song (used by music-page links).
+function pickInitialSong(songs) {
+  try {
+    const requested = new URLSearchParams(globalThis.location?.search ?? '').get('song');
+    return songs.find((song) => song.id === requested) ?? songs[0];
+  } catch {
+    return songs[0];
+  }
+}
+
 const AUDIO_OFFSET_LIMIT_MS = 120;
 const clampOffsetMs = (value) => {
   const number = Number(value);
@@ -27,7 +37,7 @@ const createBufferFactory = (song) => {
 export class Game {
   constructor(root = document) {
     this.songs = SONG_CATALOG;
-    this.song = this.songs[0];
+    this.song = pickInitialSong(this.songs);
     this.selectedDifficulty = this.song.difficulties.find(
       ({ level }) => level === this.song.defaultDifficulty,
     ) ?? this.song.difficulties[0];
