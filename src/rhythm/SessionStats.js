@@ -89,7 +89,6 @@ export class SessionStats {
       early: this.early,
       late: this.late,
       averageOffsetMs: round(averageOffset * 1000),
-      offsetsMs: this.hitOffsets.map((value) => round(value * 1000)),
       fullCombo,
       allPerfect,
       processed: this.processed,
@@ -99,6 +98,11 @@ export class SessionStats {
 
   finalize() {
     this.locked = true;
-    return this.snapshot();
+    // Offsets are only needed on the result screen, so keep them out of the
+    // per-frame snapshot() and materialize the array once here.
+    return {
+      ...this.snapshot(),
+      offsetsMs: this.hitOffsets.map((value) => round(value * 1000)),
+    };
   }
 }

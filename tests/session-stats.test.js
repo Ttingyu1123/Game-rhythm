@@ -65,8 +65,13 @@ test('locks statistics after finalization', () => {
   const result = stats.finalize();
 
   stats.apply('miss');
+  const after = stats.snapshot();
 
-  assert.deepEqual(stats.snapshot(), result);
+  // finalize() adds offsetsMs on top of the frame snapshot; the locked stats
+  // themselves must not move when a late apply() arrives.
+  const { offsetsMs, ...lockedResult } = result;
+  assert.deepEqual(after, lockedResult);
+  assert.deepEqual(offsetsMs, [0]);
 });
 
 test('maps accuracy to centralized grade thresholds', () => {
