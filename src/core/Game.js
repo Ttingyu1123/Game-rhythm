@@ -4,7 +4,7 @@ import { SONG_CATALOG, findSongById } from '../data/songCatalog.js';
 import { InputManager } from '../input/InputManager.js';
 import { CanvasRenderer } from '../rendering/CanvasRenderer.js';
 import { validateChart } from '../rhythm/ChartValidator.js';
-import { resolveAutoMisses, resolvePress } from '../rhythm/JudgmentSystem.js';
+import { resolveAutoMisses, resolveHoldRelease, resolvePress } from '../rhythm/JudgmentSystem.js';
 import { SessionStats } from '../rhythm/SessionStats.js';
 import { SaveStore } from '../storage/SaveStore.js';
 import { AppUI } from '../ui/AppUI.js';
@@ -174,7 +174,14 @@ export class Game {
     if (errors.length) throw new Error(`譜面資料錯誤：${errors[0]}`);
     return {
       ...chart,
-      notes: chart.notes.map((note) => ({ ...note, judged: false, judgment: null, hitOffset: null })),
+      notes: chart.notes.map((note) => ({
+        ...note,
+        judged: false,
+        judgment: null,
+        hitOffset: null,
+        holdActive: false,
+        headJudgment: null,
+      })),
     };
   }
 
@@ -236,11 +243,11 @@ export class Game {
 
     if (this.state.current === 'playing') {
       songTime = this.audio.songTime;
-      const missed = resolveAutoMisses(this.chart.notes, songTime);
-      for (const note of missed) {
-        this.stats.apply('miss');
-        this.renderer.addHitEffect(note.lane, 'miss');
-        this.ui.showJudgment('miss');
+      const resolved = resolveAutoMisses(this.chart.notes, songTime);
+      for (const note of resolved) {
+        this.stats.apply(note.judgment, note.hitOffset);
+        this.renderer.addHitEffect(note.lane, note.judgment);
+        this.ui.showJudgment(note.judgment);
       }
 
       if (songTime >= this.chart.duration) {
@@ -280,18 +287,30 @@ export class Game {
     this.ui.setPressed(lane, true);
     if (this.state.current !== 'playing') return;
 
-    const judgeTime = this.audio.songTime - clampOffsetMs(this.settings.audioOffsetMs) / 1000;
-    const result = resolvePress(this.chart.notes, lane, judgeTime);
+    const result = resolvePress(this.chart.notes, lane, this.judgeTime());
     if (!result) return;
-    this.stats.apply(result.judgment, result.offset);
     this.audio.playHit(result.judgment);
     this.renderer.addHitEffect(lane, result.judgment);
     this.ui.showJudgment(result.judgment, result.timing);
+    // A hold is scored when its tail resolves, not at the head press.
+    if (!result.isHold) this.stats.apply(result.judgment, result.offset);
   }
 
   handleLaneRelease(lane) {
     this.pressedLanes.delete(lane);
     this.ui.setPressed(lane, false);
+    if (this.state.current !== 'playing') return;
+
+    const release = resolveHoldRelease(this.chart.notes, lane, this.judgeTime());
+    if (!release) return;
+    this.stats.apply(release.judgment, release.note.hitOffset);
+    this.audio.playHit(release.judgment);
+    this.renderer.addHitEffect(lane, release.judgment);
+    this.ui.showJudgment(release.judgment, release.broken ? null : release.note.hitOffset < 0 ? 'early' : 'late');
+  }
+
+  judgeTime() {
+    return this.audio.songTime - clampOffsetMs(this.settings.audioOffsetMs) / 1000;
   }
 
   clearPressedLanes() {

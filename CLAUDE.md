@@ -34,13 +34,18 @@ npm run preview  # 預覽 production build
 - 暫停＝記下精確 offset + 停掉 source；恢復＝新建 `AudioBufferSourceNode` 從 offset 排程播放。
 - 譜面是固定規則產生的確定性資料——同曲同級每次完全相同。低級音符保留到高級，逐級加料。
 - 判定窗（ms）：Marvelous ±30 / Perfect ±55 / Great ±90 / Good ±140；分數正規化至 1,000,000。改判定常數要同步改 `tests/judgment-system.test.js`。
+- **長按音符**：`type:'hold'` + `duration`（秒）。生命週期在 `JudgmentSystem`：頭部按下 → `holdActive`（尚未計分）；放開 → `resolveHoldRelease` 結算（太早放=斷開給 good，按住穿過尾端=依頭尾較嚴一級）；一直按到超過尾端 → `resolveAutoMisses` 自動完成。一顆長按只 `stats.apply` 一次。改動判定迴圈時 head/tail/break/auto-complete 四條路徑都要顧到。
+
+## 長按譜面的加法（保留既有音符數的關鍵技巧）
+
+專家譜面的長按是用「把既有 tap 就地轉成 hold」達成，不是新增音符——所以音符數、雙押數、README 表格、玩家紀錄全部不變。`addHold(beat, lane, lengthBeats)` 在 build 尾端（所有音符都放好之後）呼叫，它 no-op 掉 `addPulse`（該 pulse 已存在）只登記 hold 長度，map 階段再把該音符標成 hold。前提：目標 (beat, lane) 是既有單一音符（非雙押），且長按區間內該軌道要有足夠空檔（`ChartValidator` 會擋重疊）。找安全轉換點的方式見 git 史的分析腳本。
 
 ## 加一首新歌
 
 1. MP3 放 `assets/music/`（歌曲模組用 `new URL('...', import.meta.url).href` 引用，讓 Vite 雜湊複製）。
-2. `src/data/songs/` 新增模組（照 `swingCarnival.js`），填 BPM、首拍偏移、時長、譜面工廠。
+2. `src/data/songs/` 新增模組（照 `swingCarnival.js`），填 BPM、首拍偏移、時長、譜面工廠。build 回呼可用 `addNote` / `addRange` / `addDouble` / `addHold`。
 3. `src/data/songCatalog.js` 匯入並加進 `SONG_CATALOG`。
-4. `npm test`——`song-catalog` / `new-song-charts` 測試會驗證譜面合法性。
+4. `npm test`——`song-catalog` / `new-song-charts` / `hold-charts` 測試會驗證譜面合法性。
 
 ## 部署
 

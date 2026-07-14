@@ -67,6 +67,7 @@ export function createTapChartSet({
 
   const buildNotes = (level) => {
     const events = new Map();
+    const holds = new Map();
 
     const addPulse = (pulse, lane) => {
       assertLane(lane);
@@ -78,6 +79,19 @@ export function createTapChartSet({
     };
 
     const addNote = (beat, lane) => addPulse(pulseForBeat(beat), lane);
+
+    const addHold = (beat, lane, lengthBeats) => {
+      assertLane(lane);
+      const pulse = pulseForBeat(beat);
+      const lengthPulses = pulseForBeat(lengthBeats);
+      if (lengthPulses <= 0) throw new TypeError('addHold 長度必須是正數。');
+      const endTime = safeBeatOffset + ((pulse + lengthPulses) / PULSES_PER_BEAT) * beatDuration;
+      if (endTime >= safeDuration) {
+        throw new RangeError(`長按尾端超出歌曲範圍：${endTime.toFixed(6)} 秒。`);
+      }
+      addPulse(pulse, lane);
+      holds.set(`${pulse}:${lane}`, lengthPulses);
+    };
 
     const addRange = ({
       start,
@@ -121,17 +135,32 @@ export function createTapChartSet({
       addNote,
       addRange,
       addDouble,
+      addHold,
     });
 
     return [...events.entries()]
       .flatMap(([pulse, lanes]) => lanes.map((lane) => ({ pulse, lane })))
       .sort((a, b) => a.pulse - b.pulse || LANES.indexOf(a.lane) - LANES.indexOf(b.lane))
-      .map(({ pulse, lane }, index) => Object.freeze({
-        id: `${idPrefix}-l${level}-${String(index + 1).padStart(3, '0')}`,
-        time: Number((safeBeatOffset + (pulse / PULSES_PER_BEAT) * beatDuration).toFixed(6)),
-        lane,
-        type: 'tap',
-      }));
+      .map(({ pulse, lane }, index) => {
+        const time = Number((safeBeatOffset + (pulse / PULSES_PER_BEAT) * beatDuration).toFixed(6));
+        const lengthPulses = holds.get(`${pulse}:${lane}`);
+        if (lengthPulses) {
+          const endTime = safeBeatOffset + ((pulse + lengthPulses) / PULSES_PER_BEAT) * beatDuration;
+          return Object.freeze({
+            id: `${idPrefix}-l${level}-${String(index + 1).padStart(3, '0')}`,
+            time,
+            lane,
+            type: 'hold',
+            duration: Number((endTime - time).toFixed(6)),
+          });
+        }
+        return Object.freeze({
+          id: `${idPrefix}-l${level}-${String(index + 1).padStart(3, '0')}`,
+          time,
+          lane,
+          type: 'tap',
+        });
+      });
   };
 
   const templates = new Map(

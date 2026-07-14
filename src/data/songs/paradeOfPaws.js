@@ -24,7 +24,7 @@ const chartSet = createTapChartSet({
   beatOffset: BEAT_OFFSET,
   idPrefix: 'paws',
   difficulties: DIFFICULTY_DEFINITIONS,
-  build({ level, addNote, addRange, addDouble }) {
+  build({ level, addNote, addRange, addDouble, addHold }) {
     addRange({ start: 8, end: 152, step: 1, pattern: PAW_PATTERN, skipEvery: 4 });
     addNote(152, 'left');
     addNote(154, 'right');
@@ -50,6 +50,14 @@ const chartSet = createTapChartSet({
       });
       [16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 140, 144, 148, 152]
         .forEach((beat) => addDouble(beat));
+
+      // Expert introduces sustained runes on notes with free lane space after them.
+      addHold(8, 'left', 1);
+      addHold(12, 'left', 2);
+      addHold(16.5, 'down', 1);
+      addHold(19.5, 'right', 1);
+      addHold(22.5, 'up', 2);
+      addHold(26, 'down', 2);
     }
   },
 });

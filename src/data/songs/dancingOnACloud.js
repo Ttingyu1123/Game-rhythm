@@ -24,7 +24,7 @@ const chartSet = createTapChartSet({
   beatOffset: BEAT_OFFSET,
   idPrefix: 'cloud',
   difficulties: DIFFICULTY_DEFINITIONS,
-  build({ level, addNote, addRange, addDouble }) {
+  build({ level, addNote, addRange, addDouble, addHold }) {
     addRange({ start: 8, end: 316, step: 2, pattern: BASE_PATTERN });
     addRange({ start: 8, end: 36, step: 1, pattern: FLOW_PATTERN });
     addNote(318, 'up');
@@ -52,6 +52,14 @@ const chartSet = createTapChartSet({
         20, 28, 36, 44, 52, 60, 68, 76, 84, 92, 100, 116, 124, 132,
         140, 148, 156, 172, 188, 196, 204, 212, 220, 228, 244, 260, 276, 292,
       ].forEach((beat) => addDouble(beat));
+
+      // Expert introduces sustained runes on notes with free lane space after them.
+      addHold(14, 'right', 2);
+      addHold(17, 'right', 2);
+      addHold(21, 'down', 2);
+      addHold(32, 'up', 2);
+      addHold(41.5, 'left', 1.5);
+      addHold(45.5, 'down', 2);
     }
   },
 });

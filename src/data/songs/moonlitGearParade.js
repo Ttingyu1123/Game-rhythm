@@ -73,9 +73,15 @@ function difficultyForLevel(level) {
 function createMoonlitGearParadeChart(requestedLevel = 1) {
   const difficulty = difficultyForLevel(requestedLevel);
   const events = new Map();
+  const holds = new Map();
 
   const addSingle = (tick, lane) => {
     if (!events.has(tick)) events.set(tick, [lane]);
+  };
+
+  // Extends an already-placed note into a sustained hold of lengthBeats.
+  const addHold = (beat, lane, lengthBeats) => {
+    holds.set(`${beat * 2}:${lane}`, lengthBeats * 2);
   };
 
   const addDouble = (beat) => {
@@ -150,17 +156,29 @@ function createMoonlitGearParadeChart(requestedLevel = 1) {
     ].forEach(fillRange);
     [16, 24, 32, 40, 48, 56, 64, 72, 84, 92, 100, 108, 116, 124, 136, 144, 152, 160]
       .forEach(addDouble);
+
+    // Expert introduces sustained runes on notes with free lane space after them.
+    addHold(9, 'down', 2);
+    addHold(15, 'right', 2);
+    addHold(20, 'left', 2);
+    addHold(28, 'left', 2);
+    addHold(34.5, 'up', 1.5);
+    addHold(41, 'down', 2);
   }
 
   const notes = [...events.entries()]
     .flatMap(([tick, lanes]) => lanes.map((lane) => ({ tick, lane })))
     .sort((a, b) => a.tick - b.tick || LANES.indexOf(a.lane) - LANES.indexOf(b.lane))
-    .map(({ tick, lane }, index) => ({
-      id: `gear-l${difficulty.level}-${String(index + 1).padStart(3, '0')}`,
-      time: roundedTime(tick),
-      lane,
-      type: 'tap',
-    }));
+    .map(({ tick, lane }, index) => {
+      const time = roundedTime(tick);
+      const base = { id: `gear-l${difficulty.level}-${String(index + 1).padStart(3, '0')}`, time, lane };
+      const lengthTicks = holds.get(`${tick}:${lane}`);
+      if (lengthTicks) {
+        const endTime = Number((BEAT_OFFSET + ((tick + lengthTicks) / 2) * BEAT).toFixed(6));
+        return { ...base, type: 'hold', duration: Number((endTime - time).toFixed(6)) };
+      }
+      return { ...base, type: 'tap' };
+    });
 
   return {
     songId: 'moonlit-gear-parade',

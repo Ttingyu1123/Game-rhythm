@@ -213,15 +213,51 @@ export class CanvasRenderer {
 
     for (const note of chart.notes) {
       if (note.judged) continue;
-      const y = noteYAtTime({
+      const center = this.laneCenter(note.lane, layout);
+      const headY = noteYAtTime({
         hitLineY: layout.hitLineY,
         noteTime: note.time,
         songTime,
         pixelsPerSecond,
       });
-      if (y < layout.top - noteSize || y > layout.bottom + noteSize) continue;
-      this.drawRune(ctx, this.laneCenter(note.lane, layout), y, note.lane, noteSize, 1);
+
+      if (note.type === 'hold' && Number.isFinite(note.duration)) {
+        const tailY = noteYAtTime({
+          hitLineY: layout.hitLineY,
+          noteTime: note.time + note.duration,
+          songTime,
+          pixelsPerSecond,
+        });
+        // While held, the head stays pinned to the judgment line as the tail descends.
+        const anchorY = note.holdActive ? Math.min(headY, layout.hitLineY) : headY;
+        if (tailY > layout.bottom + noteSize || anchorY < layout.top - noteSize) continue;
+        this.drawHoldBody(ctx, center, tailY, anchorY, note.lane, layout, note.holdActive);
+        this.drawRune(ctx, center, anchorY, note.lane, noteSize, 1);
+        continue;
+      }
+
+      if (headY < layout.top - noteSize || headY > layout.bottom + noteSize) continue;
+      this.drawRune(ctx, center, headY, note.lane, noteSize, 1);
     }
+  }
+
+  drawHoldBody(ctx, x, tailY, headY, lane, layout, active) {
+    const width = Math.min(30, layout.laneWidth * 0.34);
+    const top = Math.min(tailY, headY);
+    const height = Math.max(4, Math.abs(headY - tailY));
+    ctx.save();
+    ctx.globalAlpha = active ? 0.92 : 0.62;
+    const gradient = ctx.createLinearGradient(0, top, 0, top + height);
+    gradient.addColorStop(0, `${COLORS[lane]}22`);
+    gradient.addColorStop(1, `${COLORS[lane]}${active ? 'cc' : '77'}`);
+    ctx.fillStyle = gradient;
+    if (active) {
+      ctx.shadowColor = COLORS[lane];
+      ctx.shadowBlur = 14;
+    }
+    roundedRect(ctx, x - width / 2, top, width, height, width / 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   drawRune(ctx, x, y, lane, size, alpha) {

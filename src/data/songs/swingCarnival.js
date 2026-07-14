@@ -24,7 +24,7 @@ const chartSet = createTapChartSet({
   beatOffset: BEAT_OFFSET,
   idPrefix: 'swing',
   difficulties: DIFFICULTY_DEFINITIONS,
-  build({ level, addNote, addRange, addDouble }) {
+  build({ level, addNote, addRange, addDouble, addHold }) {
     addRange({ start: 8, end: 124, step: 1, pattern: BASE_PATTERN, skipEvery: 4 });
     addNote(126, 'right');
 
@@ -48,6 +48,14 @@ const chartSet = createTapChartSet({
       });
       [16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 108, 112, 116, 120]
         .forEach((beat) => addDouble(beat));
+
+      // Expert introduces sustained runes on notes with free lane space after them.
+      addHold(9, 'down', 1);
+      addHold(13, 'left', 1);
+      addHold(17, 'down', 1);
+      addHold(22, 'up', 2);
+      addHold(30, 'up', 2);
+      addHold(37, 'left', 2);
     }
   },
 });

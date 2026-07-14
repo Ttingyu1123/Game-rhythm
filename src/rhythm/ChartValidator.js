@@ -18,7 +18,9 @@ export function validateChart(chart) {
 
   const ids = new Set();
   const laneTimes = new Set();
+  const laneIntervals = new Map();
   let previousTime = -Infinity;
+  const OVERLAP_EPSILON = 1e-9;
 
   chart.notes.forEach((note, index) => {
     const label = `Note ${index + 1}`;
@@ -39,10 +41,12 @@ export function validateChart(chart) {
       errors.push(`${label} has an invalid lane: ${note.lane}.`);
     }
 
-    if (note.type !== 'tap') {
+    const isHold = note.type === 'hold';
+    if (note.type !== 'tap' && !isHold) {
       errors.push(`${label} has an unsupported type: ${note.type}.`);
     }
 
+    let endTime = note.time;
     if (!Number.isFinite(note.time)) {
       errors.push(`${label} time must be a finite number.`);
     } else {
@@ -54,6 +58,18 @@ export function validateChart(chart) {
         errors.push('Chart notes must be sorted by time.');
       }
       previousTime = note.time;
+      endTime = note.time;
+
+      if (isHold) {
+        if (!Number.isFinite(note.duration) || note.duration <= 0) {
+          errors.push(`${label} hold needs a positive duration.`);
+        } else {
+          endTime = note.time + note.duration;
+          if (Number.isFinite(chart.duration) && endTime > chart.duration + OVERLAP_EPSILON) {
+            errors.push(`${label} hold extends beyond song duration.`);
+          }
+        }
+      }
     }
 
     if (LANES.includes(note.lane) && Number.isFinite(note.time)) {
@@ -63,6 +79,16 @@ export function validateChart(chart) {
       } else {
         laneTimes.add(laneTimeKey);
       }
+
+      const intervals = laneIntervals.get(note.lane) ?? [];
+      const overlaps = intervals.some(
+        (interval) => note.time < interval.end - OVERLAP_EPSILON && interval.start < endTime - OVERLAP_EPSILON,
+      );
+      if (overlaps) {
+        errors.push(`${label} overlaps another note in lane ${note.lane}.`);
+      }
+      intervals.push({ start: note.time, end: endTime });
+      laneIntervals.set(note.lane, intervals);
     }
   });
 
