@@ -132,8 +132,14 @@ export class AppUI {
     const musicLink = this.elements['song-music-link'];
     mvLink.hidden = !links?.mvUrl;
     musicLink.hidden = !links?.musicUrl;
-    if (links?.mvUrl) mvLink.href = links.mvUrl;
-    if (links?.musicUrl) musicLink.href = links.musicUrl;
+    if (links?.mvUrl) {
+      mvLink.href = links.mvUrl;
+      mvLink.textContent = `🎬 觀看 MV · ${song.titleEn}`;
+    }
+    if (links?.musicUrl) {
+      musicLink.href = links.musicUrl;
+      musicLink.textContent = `🎵 完整曲目 · ${song.titleEn}`;
+    }
     linkRow.hidden = !links?.mvUrl && !links?.musicUrl;
 
     if (this.root.body) this.root.body.dataset.currentSongId = song.id;
