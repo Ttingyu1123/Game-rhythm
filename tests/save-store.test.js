@@ -28,7 +28,17 @@ test('loads safe versioned defaults when no save exists', () => {
   assert.equal(data.saveVersion, 1);
   assert.equal(data.settings.masterVolume, 0.8);
   assert.equal(data.settings.scrollSpeed, 1);
+  assert.equal(data.settings.audioOffsetMs, 0);
   assert.deepEqual(data.records, {});
+});
+
+test('persists the audio latency offset across loads', () => {
+  const storage = new MemoryStorage();
+  const store = new SaveStore(storage);
+
+  const settings = store.updateSettings({ audioOffsetMs: -45 });
+  assert.equal(settings.audioOffsetMs, -45);
+  assert.equal(new SaveStore(storage).load().settings.audioOffsetMs, -45);
 });
 
 test('keeps independent best values while increasing play count', () => {

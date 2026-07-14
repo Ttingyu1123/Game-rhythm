@@ -745,6 +745,18 @@ button.song-option:focus-visible {
   width: 100%;
 }
 
+.setting-hint {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-note {
+  margin: -0.2rem 0 0.2rem;
+  color: var(--muted);
+  font-size: 0.68rem;
+  opacity: 0.8;
+}
+
 .setting-row select {
   width: 100%;
   padding: 0.55rem 0.75rem;

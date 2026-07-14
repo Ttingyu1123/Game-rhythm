@@ -29,7 +29,8 @@ export class AppUI {
     this.elements = {};
     [
       'menu-screen', 'game-screen', 'result-screen', 'start-button', 'volume-slider',
-      'speed-select', 'reduced-motion', 'best-grade', 'best-score', 'best-accuracy',
+      'speed-select', 'reduced-motion', 'offset-slider', 'offset-value',
+      'best-grade', 'best-score', 'best-accuracy',
       'game-canvas', 'hud-score', 'hud-accuracy', 'hud-combo', 'hud-max-combo',
       'hud-gauge-fill', 'hud-gauge-value', 'hud-progress-fill', 'hud-time',
       'hud-judgment', 'hud-timing', 'countdown-overlay', 'pause-button',
@@ -146,6 +147,13 @@ export class AppUI {
     this.elements['speed-select'].value = settings.scrollSpeed;
     this.elements['pause-speed'].value = settings.scrollSpeed;
     this.elements['reduced-motion'].checked = Boolean(settings.reducedMotion);
+    this.setAudioOffsetDisplay(settings.audioOffsetMs ?? 0);
+  }
+
+  setAudioOffsetDisplay(offsetMs) {
+    const value = Math.round(offsetMs);
+    this.elements['offset-slider'].value = value;
+    this.elements['offset-value'].textContent = `${value > 0 ? '+' : ''}${value} ms`;
   }
 
   updateDifficulty(difficulty) {

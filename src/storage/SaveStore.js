@@ -8,6 +8,7 @@ function defaults() {
       masterVolume: 0.8,
       scrollSpeed: 1,
       reducedMotion: false,
+      audioOffsetMs: 0,
     },
     records: {},
   };

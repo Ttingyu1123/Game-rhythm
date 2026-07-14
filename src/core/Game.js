@@ -12,6 +12,13 @@ import { GameStateMachine } from './GameState.js';
 
 const nextPaint = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
+const AUDIO_OFFSET_LIMIT_MS = 120;
+const clampOffsetMs = (value) => {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 0;
+  return Math.max(-AUDIO_OFFSET_LIMIT_MS, Math.min(AUDIO_OFFSET_LIMIT_MS, number));
+};
+
 const createBufferFactory = (song) => {
   if (song.audio.type !== 'file') throw new Error(`不支援的音訊類型：${song.audio.type}`);
   return (context) => loadAudioFile(context, song.audio.url);
@@ -98,6 +105,12 @@ export class Game {
     };
     el['speed-select'].addEventListener('change', (event) => updateSpeed(event.target.value));
     el['pause-speed'].addEventListener('change', (event) => updateSpeed(event.target.value));
+
+    el['offset-slider'].addEventListener('input', (event) => {
+      const audioOffsetMs = clampOffsetMs(event.target.value);
+      this.settings = this.saveStore.updateSettings({ audioOffsetMs });
+      this.ui.setAudioOffsetDisplay(audioOffsetMs);
+    });
 
     el['reduced-motion'].addEventListener('change', (event) => {
       const reducedMotion = event.target.checked;
@@ -262,7 +275,8 @@ export class Game {
     this.ui.setPressed(lane, true);
     if (this.state.current !== 'playing') return;
 
-    const result = resolvePress(this.chart.notes, lane, this.audio.songTime);
+    const judgeTime = this.audio.songTime - clampOffsetMs(this.settings.audioOffsetMs) / 1000;
+    const result = resolvePress(this.chart.notes, lane, judgeTime);
     if (!result) return;
     this.stats.apply(result.judgment, result.offset);
     this.audio.playHit(result.judgment);
