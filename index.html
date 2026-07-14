@@ -198,6 +198,20 @@
             <div class="judgment--miss"><span>Miss</span><strong id="result-miss">0</strong></div>
           </div>
 
+          <figure id="result-offset-figure" class="offset-chart">
+            <figcaption>
+              <span>命中偏移分析</span>
+              <small id="result-offset-summary">跟著重拍施法</small>
+            </figcaption>
+            <canvas id="result-offset-chart" width="640" height="150" role="img"
+              aria-label="命中偏移分佈圖：左側為稍早，右側為稍晚，中央金線為正拍。"></canvas>
+            <div class="offset-chart__axis" aria-hidden="true">
+              <span class="offset-chart__early">← 稍早 EARLY</span>
+              <span class="offset-chart__center">正拍</span>
+              <span class="offset-chart__late">LATE 稍晚 →</span>
+            </div>
+          </figure>
+
           <p id="result-badge" class="result-badge">魔力尚存，試煉通過。</p>
           <div class="result-actions">
             <button id="result-menu-button" class="secondary-button" type="button">返回選曲</button>

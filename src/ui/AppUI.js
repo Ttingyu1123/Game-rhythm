@@ -1,3 +1,13 @@
+import { buildTimingHistogram } from '../rendering/renderMath.js';
+
+const OFFSET_CHART = Object.freeze({
+  early: '#72d4cb',
+  late: '#f188aa',
+  center: '#efc96e',
+  axis: 'rgba(225, 213, 255, 0.22)',
+  text: 'rgba(170, 165, 194, 0.9)',
+});
+
 const JUDGMENT_LABELS = Object.freeze({
   marvelous: 'MARVELOUS',
   perfect: 'PERFECT',
@@ -29,7 +39,8 @@ export class AppUI {
       'result-perfect', 'result-great', 'result-good', 'result-miss', 'result-badge',
       'result-menu-button', 'replay-button', 'error-toast', 'touch-controls',
       'difficulty-description', 'song-difficulty', 'game-difficulty',
-      'result-difficulty', 'record-difficulty',
+      'result-difficulty', 'record-difficulty', 'result-offset-chart',
+      'result-offset-summary',
       'song-options', 'song-count', 'song-selection-status', 'song-chapter',
       'song-card-title', 'song-title-en', 'song-bpm', 'song-key', 'song-duration',
       'song-source-label', 'game-song-title', 'game-song-bpm', 'result-title',
@@ -241,6 +252,88 @@ export class AppUI {
           ? `魔力剩餘 ${Math.round(result.gauge)}%，試煉通過。`
           : '放慢符文速度，再跟著重拍挑戰一次。';
     this.showScreen('result');
+    this.drawOffsetHistogram(result.offsetsMs ?? []);
+  }
+
+  drawOffsetHistogram(offsetsMs) {
+    const canvas = this.elements['result-offset-chart'];
+    const summary = this.elements['result-offset-summary'];
+    if (!canvas?.getContext) return;
+
+    const histogram = buildTimingHistogram(offsetsMs);
+    if (summary) {
+      summary.textContent = histogram.total === 0
+        ? '沒有命中資料'
+        : `${histogram.total} 次命中 · 稍早 ${histogram.early} / 稍晚 ${histogram.late}`;
+    }
+
+    const dpr = Math.min(3, Math.max(1, window.devicePixelRatio || 1));
+    const cssWidth = canvas.clientWidth || canvas.width;
+    const cssHeight = canvas.clientHeight || canvas.height;
+    canvas.width = Math.round(cssWidth * dpr);
+    canvas.height = Math.round(cssHeight * dpr);
+
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+    const padX = 12;
+    const padTop = 8;
+    const baseline = cssHeight - 18;
+    const usableWidth = cssWidth - padX * 2;
+    const usableHeight = baseline - padTop;
+    const centerX = cssWidth / 2;
+
+    // Zero-timing reference line (perfect hit).
+    ctx.strokeStyle = OFFSET_CHART.center;
+    ctx.globalAlpha = 0.55;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(centerX, padTop);
+    ctx.lineTo(centerX, baseline);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+
+    // Baseline axis.
+    ctx.strokeStyle = OFFSET_CHART.axis;
+    ctx.beginPath();
+    ctx.moveTo(padX, baseline + 0.5);
+    ctx.lineTo(cssWidth - padX, baseline + 0.5);
+    ctx.stroke();
+
+    if (histogram.total === 0) {
+      ctx.fillStyle = OFFSET_CHART.text;
+      ctx.font = '13px "Trebuchet MS", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('這一輪沒有命中任何符文', centerX, padTop + usableHeight / 2);
+      return;
+    }
+
+    const slot = usableWidth / histogram.bins.length;
+    const barWidth = Math.max(2, slot * 0.72);
+    histogram.bins.forEach((bin, index) => {
+      if (bin.count === 0) return;
+      const height = (bin.count / histogram.maxCount) * usableHeight;
+      const x = padX + slot * (index + 0.5) - barWidth / 2;
+      const y = baseline - height;
+      ctx.fillStyle = bin.centerMs === 0
+        ? OFFSET_CHART.center
+        : bin.centerMs < 0
+          ? OFFSET_CHART.early
+          : OFFSET_CHART.late;
+      ctx.fillRect(x, y, barWidth, height);
+    });
+
+    // Range ticks at the window edge.
+    ctx.fillStyle = OFFSET_CHART.text;
+    ctx.font = '11px "Trebuchet MS", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`-${histogram.rangeMs}ms`, padX, cssHeight - 4);
+    ctx.textAlign = 'right';
+    ctx.fillText(`+${histogram.rangeMs}ms`, cssWidth - padX, cssHeight - 4);
+    ctx.textAlign = 'center';
+    ctx.fillText('0', centerX, cssHeight - 4);
   }
 
   showError(message) {

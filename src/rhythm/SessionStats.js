@@ -89,6 +89,7 @@ export class SessionStats {
       early: this.early,
       late: this.late,
       averageOffsetMs: round(averageOffset * 1000),
+      offsetsMs: this.hitOffsets.map((value) => round(value * 1000)),
       fullCombo,
       allPerfect,
       processed: this.processed,

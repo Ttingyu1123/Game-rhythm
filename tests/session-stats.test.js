@@ -44,6 +44,7 @@ test('tracks early, late and average hit offset without counting misses', () => 
   assert.equal(result.early, 1);
   assert.equal(result.late, 1);
   assert.equal(result.averageOffsetMs, -15);
+  assert.deepEqual(result.offsetsMs, [-60, 30]);
 });
 
 test('miss breaks combo and prevents full combo or all perfect', () => {
