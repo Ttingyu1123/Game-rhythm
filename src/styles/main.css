@@ -680,6 +680,29 @@ button.song-option:focus-visible {
   box-shadow: 0 0 10px var(--teal);
 }
 
+.song-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.song-link {
+  padding: 0.32rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.72rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.song-link:hover,
+.song-link:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold-pale);
+}
+
 .menu-panel {
   display: flex;
   padding: clamp(1.25rem, 3vw, 2rem);

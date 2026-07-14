@@ -46,7 +46,7 @@ export class AppUI {
       'song-options', 'song-count', 'song-selection-status', 'song-chapter',
       'song-card-title', 'song-title-en', 'song-bpm', 'song-key', 'song-duration',
       'song-source-label', 'game-song-title', 'game-song-bpm', 'result-title',
-      'result-song-en',
+      'result-song-en', 'song-links', 'song-mv-link', 'song-music-link',
     ].forEach((id) => {
       this.elements[id] = root.getElementById(id);
     });
@@ -125,6 +125,16 @@ export class AppUI {
       button.querySelector('strong').textContent = `Lv.${difficulty.level}`;
       button.querySelector('small').textContent = difficulty.label;
     });
+
+    const links = song.links ?? null;
+    const linkRow = this.elements['song-links'];
+    const mvLink = this.elements['song-mv-link'];
+    const musicLink = this.elements['song-music-link'];
+    mvLink.hidden = !links?.mvUrl;
+    musicLink.hidden = !links?.musicUrl;
+    if (links?.mvUrl) mvLink.href = links.mvUrl;
+    if (links?.musicUrl) musicLink.href = links.musicUrl;
+    linkRow.hidden = !links?.mvUrl && !links?.musicUrl;
 
     if (this.root.body) this.root.body.dataset.currentSongId = song.id;
   }

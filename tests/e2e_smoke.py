@@ -66,7 +66,7 @@ def main() -> None:
         assert page.locator("#menu-screen").is_visible()
 
         song_buttons.nth(3).click()
-        assert page.locator("#song-card-title").inner_text() == "爪爪大遊行"
+        assert page.locator("#song-card-title").inner_text() == "奇想貓帽遊行"
         assert page.locator("#song-key").inner_text() == "C major"
         song_buttons.first.click()
         assert "入門 Lv.1" in page.locator(".song-meta").inner_text()

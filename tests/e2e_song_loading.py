@@ -8,7 +8,7 @@ BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:5192")
 SONGS = [
     ("swing-carnival", "搖擺嘉年華", "Swing_Carnival.mp3"),
     ("dancing-on-a-cloud", "雲端漫舞", "Dancing_on_a_Cloud.mp3"),
-    ("parade-of-paws", "爪爪大遊行", "Parade_of_Paws.mp3"),
+    ("parade-of-paws", "奇想貓帽遊行", "Parade_of_Paws.mp3"),
 ]
 
 

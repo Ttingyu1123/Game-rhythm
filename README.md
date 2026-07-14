@@ -43,7 +43,7 @@ npm run preview
 | 月光齒輪巡遊 Moonlit Gear Parade | 奇幻小調 | 130 | D minor | 1:17 | `main-theme.mp3` |
 | 搖擺嘉年華 Swing Carnival | 奇幻搖擺 | 111 | G major | 1:10 | `Swing_Carnival.mp3` |
 | 雲端漫舞 Dancing on a Cloud | 夢幻舞曲 | 127 | A minor | 2:34 | `Dancing_on_a_Cloud.mp3` |
-| 爪爪大遊行 Parade of Paws | 奇幻進行曲 | 100 | C major | 1:35 | `Parade_of_Paws.mp3` |
+| 奇想貓帽遊行 Whimsical Parade Jazz | 奇想爵士進行曲 | 100 | C major | 1:35 | `Parade_of_Paws.mp3` |
 
 各曲各級的音符數：
 
@@ -52,7 +52,7 @@ npm run preview
 | 月光齒輪巡遊 | 104 | 146 | 202 | 264 |
 | 搖擺嘉年華 | 88 | 128 | 174 | 236 |
 | 雲端漫舞 | 169 | 233 | 333 | 429 |
-| 爪爪大遊行 | 111 | 159 | 231 | 307 |
+| 奇想貓帽遊行 | 111 | 159 | 231 | 307 |
 
 譜面由固定規則建立，每次遊玩完全相同。較低等級的音符會保留在下一級，再逐級加入切分、短填充與雙押。歌曲模組位於 `src/data/songs/`；三首 Suno 新曲共用 `src/rhythm/TapChartFactory.js` 的十二分拍網格產生器。
 

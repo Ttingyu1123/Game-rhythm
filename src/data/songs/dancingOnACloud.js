@@ -77,6 +77,10 @@ export const DANCING_ON_A_CLOUD = Object.freeze({
   duration: DURATION,
   audioType: 'file',
   audio: Object.freeze({ type: 'file', url: AUDIO_URL }),
+  links: Object.freeze({
+    mvUrl: 'https://youtube.com/shorts/WGBCdAmHyaA',
+    musicUrl: 'https://tingyudeco.com/portfolio/music?song=dancing-on-a-cloud',
+  }),
   defaultDifficulty: 1,
   difficulties: chartSet.difficulties,
   createChart: chartSet.createChart,

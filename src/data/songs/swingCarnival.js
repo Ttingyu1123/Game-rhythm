@@ -73,6 +73,10 @@ export const SWING_CARNIVAL = Object.freeze({
   duration: DURATION,
   audioType: 'file',
   audio: Object.freeze({ type: 'file', url: AUDIO_URL }),
+  links: Object.freeze({
+    mvUrl: 'https://youtu.be/rJTgA7F4yfU',
+    musicUrl: 'https://tingyudeco.com/portfolio/music?song=vintage-swing-carnival',
+  }),
   defaultDifficulty: 1,
   difficulties: chartSet.difficulties,
   createChart: chartSet.createChart,

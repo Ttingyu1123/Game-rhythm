@@ -42,7 +42,7 @@ with sync_playwright() as playwright:
     )
     assert page.locator("#song-library").bounding_box()["height"] < 430
     song_buttons.nth(3).click()
-    assert page.locator("#song-card-title").inner_text() == "爪爪大遊行"
+    assert page.locator("#song-card-title").inner_text() == "奇想貓帽遊行"
     song_buttons.first.click()
     assert "入門 Lv.1" in page.locator(".song-meta").inner_text()
     assert page.locator("[data-difficulty-level]").count() == 4
