@@ -80,6 +80,11 @@ export class Game {
     el['quit-button'].addEventListener('click', () => this.returnToMenu());
     el['result-menu-button'].addEventListener('click', () => this.returnToMenu());
     el['replay-button'].addEventListener('click', () => this.startNewSession());
+    el['help-button'].addEventListener('click', () => this.ui.showHelp(true));
+    el['help-close-button'].addEventListener('click', () => this.ui.showHelp(false));
+    el['help-overlay'].addEventListener('click', (event) => {
+      if (event.target === el['help-overlay']) this.ui.showHelp(false);
+    });
     this.ui.difficultyButtons.forEach((button) => {
       button.addEventListener('click', () => this.selectDifficulty(Number(button.dataset.difficultyLevel)));
     });
@@ -296,6 +301,10 @@ export class Game {
   }
 
   togglePause() {
+    if (this.ui.helpVisible) {
+      this.ui.showHelp(false);
+      return;
+    }
     if (this.state.current === 'playing') {
       this.audio.pause();
       this.state.transition('paused');
@@ -332,6 +341,10 @@ export class Game {
   }
 
   confirmCurrentScreen() {
+    if (this.ui.helpVisible) {
+      this.ui.showHelp(false);
+      return;
+    }
     if (this.state.current === 'menu' || this.state.current === 'result') {
       this.startNewSession();
     } else if (this.state.current === 'paused') {

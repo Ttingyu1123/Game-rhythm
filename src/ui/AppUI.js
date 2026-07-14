@@ -35,6 +35,7 @@ export class AppUI {
       'hud-gauge-fill', 'hud-gauge-value', 'hud-progress-fill', 'hud-time',
       'hud-judgment', 'hud-timing', 'countdown-overlay', 'pause-button',
       'pause-overlay', 'pause-volume', 'pause-speed', 'resume-button', 'restart-button',
+      'help-button', 'help-overlay', 'help-close-button',
       'quit-button', 'result-status', 'result-grade', 'new-record', 'result-score',
       'result-accuracy', 'result-combo', 'result-offset', 'result-marvelous',
       'result-perfect', 'result-great', 'result-good', 'result-miss', 'result-badge',
@@ -239,6 +240,19 @@ export class AppUI {
   showPause(visible) {
     this.elements['pause-overlay'].hidden = !visible;
     if (visible) this.elements['resume-button'].focus();
+  }
+
+  showHelp(visible) {
+    this.elements['help-overlay'].hidden = !visible;
+    if (visible) {
+      this.elements['help-close-button'].focus();
+    } else {
+      this.elements['help-button'].focus();
+    }
+  }
+
+  get helpVisible() {
+    return !this.elements['help-overlay'].hidden;
   }
 
   showResults(result, { passed, newRecord }) {

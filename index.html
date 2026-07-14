@@ -124,6 +124,7 @@
               <span class="primary-button__key">SPACE</span>
             </button>
             <p class="control-hint">方向鍵或 D F J K · P 暫停 · R 重新開始</p>
+            <button id="help-button" class="text-button" type="button">✦ 如何遊玩</button>
           </aside>
         </div>
       </section>
@@ -226,6 +227,45 @@
         </div>
       </section>
     </main>
+
+    <div id="help-overlay" class="modal-layer" role="dialog" aria-modal="true" aria-labelledby="help-title" hidden>
+      <div class="help-card">
+        <p class="eyebrow">First Rite · 新手指引</p>
+        <h2 id="help-title">如何遊玩</h2>
+        <p class="help-lead">符文從上方落下，在抵達判定線的瞬間按下對應軌道的按鍵，跟著重拍施法。</p>
+
+        <ol class="help-steps">
+          <li>
+            <strong>四軌符文</strong>
+            <div class="help-lanes" aria-hidden="true">
+              <span class="help-lane help-lane--left">←<small>D</small></span>
+              <span class="help-lane help-lane--down">↓<small>F</small></span>
+              <span class="help-lane help-lane--up">↑<small>J</small></span>
+              <span class="help-lane help-lane--right">→<small>K</small></span>
+            </div>
+            <p>用方向鍵或 <b>D F J K</b>；手機可點畫面下方四顆按鈕（支援雙指同時按）。</p>
+          </li>
+          <li>
+            <strong>準時就是一切</strong>
+            <div class="help-windows">
+              <span class="judgment--marvelous">Marvelous ±30ms</span>
+              <span class="judgment--perfect">Perfect ±55ms</span>
+              <span class="judgment--great">Great ±90ms</span>
+              <span class="judgment--good">Good ±140ms</span>
+            </div>
+            <p>越接近拍點分數越高。結算會畫出你的偏移分佈——總是偏早或偏晚，就到選單的<b>延遲校正</b>微調。</p>
+          </li>
+          <li>
+            <strong>隨時掌控</strong>
+            <p><b>Space / Enter</b> 開始 · <b>P / Esc</b> 暫停 · <b>R</b> 重新開始。魔力耗盡就會結束試煉。</p>
+          </li>
+        </ol>
+
+        <div class="help-actions">
+          <button id="help-close-button" class="primary-button primary-button--compact" type="button">開始練習</button>
+        </div>
+      </div>
+    </div>
 
     <div id="pause-overlay" class="modal-layer" role="dialog" aria-modal="true" aria-labelledby="pause-title" hidden>
       <div class="pause-card">
