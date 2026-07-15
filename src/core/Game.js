@@ -210,6 +210,9 @@ export class Game {
     this.renderer.reset();
 
     try {
+      // Runs in the same task as the button press, before any await: iOS Safari will
+      // not unlock an AudioContext created after the gesture task has ended.
+      this.audio.unlock();
       this.chart = this.createSessionChart();
       this.stats = new SessionStats(this.chart.notes.length);
       this.ensureLoop();
@@ -350,6 +353,9 @@ export class Game {
     if (this.state.current !== 'paused' || this.resumePending) return;
     this.resumePending = true;
     try {
+      // Same gesture-task requirement as startNewSession: iOS suspends the context
+      // while paused, and only a resume issued inside the tap will restart the clock.
+      this.audio.unlock();
       await this.audio.resume(3);
       if (this.state.current !== 'paused') return;
       this.state.transition('countdown');

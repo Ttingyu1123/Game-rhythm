@@ -40,7 +40,7 @@ export class AudioEngine {
     this.playbackRevision = 0;
   }
 
-  async ensureReady() {
+  ensureContext() {
     if (!this.context) {
       this.context = this.contextFactory();
       this.masterGain = this.context.createGain();
@@ -53,7 +53,25 @@ export class AudioEngine {
       this.sfxGain.connect(this.masterGain);
       this.masterGain.connect(this.context.destination);
     }
+    return this.context;
+  }
 
+  // iOS Safari only unlocks an AudioContext that is created and resumed inside the
+  // user-gesture task itself. A context born after an await or requestAnimationFrame
+  // stays suspended forever: currentTime never advances, so the countdown freezes at 3
+  // and nothing plays. Call this synchronously from the click/key handler, before any
+  // await, and never await it here — awaiting would defeat the purpose.
+  unlock() {
+    const context = this.ensureContext();
+    if (context.state === 'suspended') {
+      const resuming = context.resume();
+      if (resuming && typeof resuming.catch === 'function') resuming.catch(() => {});
+    }
+    return context;
+  }
+
+  async ensureReady() {
+    this.ensureContext();
     if (this.context.state === 'suspended') await this.context.resume();
     if (this.buffer) return this.context;
 

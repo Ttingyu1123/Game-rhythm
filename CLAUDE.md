@@ -11,7 +11,9 @@ npm run build    # 產出 dist/（MP3 會被 Vite 雜湊複製）
 npm run preview  # 預覽 production build
 ```
 
-需 Node.js ≥ 20.19。`tests/e2e_*.py` 是 Playwright Python 煙霧測試，需另行啟 dev server 後手動跑。
+需 Node.js ≥ 20.19。`tests/e2e_*.py` 是 Playwright Python 煙霧測試，需另行啟 dev server 後手動跑：
+`npx vite --port 7421 --strictPort`，再 `PYTHONUTF8=1 BASE_URL=http://localhost:7421 python tests/e2e_smoke.py`
+（`PYTHONUTF8=1` 必加，否則印出 emoji 會 cp950 崩潰；Windows 保留了 5734-5933 等埠段，選埠避開）。
 
 ## 架構
 
@@ -30,6 +32,7 @@ npm run preview  # 預覽 production build
 ## 不可破壞的同步設計（改動 audio/rhythm 前必讀）
 
 - **單一時間源**：譜面與 MP3 共用 `AudioContext.currentTime`。倒數、自動 Miss、輸入判定、音符位置全部從同一個歌曲時間推導。
+- **iOS 音訊解鎖**：`AudioContext` 必須在**使用者手勢的同一個同步任務內**建立並 resume（`AudioEngine.unlock()`，由 `startNewSession` / `resumeSession` 在任何 `await` 之前呼叫）。iOS Safari 不接受 `await`／`requestAnimationFrame` 之後才誕生的 context——它會永遠停在 suspended，`currentTime` 不前進，症狀是**倒數卡在 3 且完全無聲**。Chromium 的 user activation 可跨任務存活，所以桌機與手機模擬測試都抓不到，必須靠 `tests/e2e_ios_audio_unlock.py`（在 Chromium 內模擬 Safari 的嚴格規則）。新增任何會啟動／恢復音訊的入口時，`unlock()` 一律放在該入口的第一個 `await` 之前。
 - 音符位置每幀由 `hitTime - songTime` 重算，**絕不**累加像素位移；掉幀不會累積誤差。
 - 暫停＝記下精確 offset + 停掉 source；恢復＝新建 `AudioBufferSourceNode` 從 offset 排程播放。
 - 譜面是固定規則產生的確定性資料——同曲同級每次完全相同。低級音符保留到高級，逐級加料。

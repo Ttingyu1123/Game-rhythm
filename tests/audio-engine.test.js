@@ -258,3 +258,41 @@ test('configure validates before disturbing the current playback', async () => {
   assert.equal(source.stopped, undefined);
   assert.equal(engine.duration, 60);
 });
+
+test('unlock creates and resumes the context synchronously for iOS Safari', () => {
+  const context = new FakeContext();
+  let resumeCalls = 0;
+  context.resume = async () => {
+    resumeCalls += 1;
+    context.state = 'running';
+  };
+  const engine = new AudioEngine({
+    duration: 60,
+    contextFactory: () => context,
+    bufferFactory: () => ({ duration: 60 }),
+  });
+
+  // No await: iOS only unlocks a context created and resumed inside the gesture task,
+  // so unlock must do both before it returns.
+  const returned = engine.unlock();
+
+  assert.equal(returned, context);
+  assert.equal(engine.context, context);
+  assert.equal(resumeCalls, 1, 'unlock must call resume() without awaiting');
+  assert.equal(engine.buffer, null, 'unlock must not trigger decoding');
+
+  engine.unlock();
+  assert.equal(resumeCalls, 1, 'an already running context is not resumed again');
+});
+
+test('unlock swallows a rejected resume instead of throwing at the caller', () => {
+  const context = new FakeContext();
+  context.resume = () => Promise.reject(new Error('gesture required'));
+  const engine = new AudioEngine({
+    duration: 60,
+    contextFactory: () => context,
+    bufferFactory: () => ({ duration: 60 }),
+  });
+
+  assert.doesNotThrow(() => engine.unlock());
+});
