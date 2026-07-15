@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0c20" />
+    <meta name="description" content="《月影祕律 Moonlit Arcana》完整攻略：判定與計分機制、長按符文、延遲校正、難度爬升路線與七首曲目逐首解析。" />
+    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <title>完整攻略｜月影祕律 Moonlit Arcana</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #f7f1dc;
+        --muted: #aaa5c2;
+        --night: #080917;
+        --night-soft: #12122c;
+        --violet: #b49be9;
+        --violet-bright: #d6b7ff;
+        --gold: #efc96e;
+        --gold-pale: #fff0b3;
+        --teal: #72d4cb;
+        --rose: #f188aa;
+        --danger: #ff6f91;
+        --line: rgba(225, 213, 255, 0.17);
+        --panel: rgba(15, 14, 37, 0.78);
+        --font-display: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+        --font-body: "Trebuchet MS", "Gill Sans", Calibri, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(1100px 500px at 85% -5%, rgba(180, 155, 233, 0.14), transparent 60%),
+          radial-gradient(900px 500px at 5% 20%, rgba(239, 201, 110, 0.07), transparent 55%),
+          linear-gradient(180deg, #0b0c20 0%, var(--night) 45%, #060711 100%);
+        color: var(--ink);
+        font-family: var(--font-body);
+        line-height: 1.75;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 1.4rem 1.2rem 5rem; }
+      .topbar {
+        display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+        padding: 0.4rem 0 1.6rem;
+      }
+      .back {
+        color: var(--gold); text-decoration: none; font-size: 0.9rem;
+        border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 1.1rem;
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .back:hover { border-color: var(--gold); }
+      .eyebrow {
+        margin: 0; color: var(--gold); font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.34em; text-transform: uppercase;
+      }
+      h1 {
+        margin: 0.4rem 0 0.6rem; font-family: var(--font-display); font-weight: 400;
+        font-size: clamp(2.4rem, 7vw, 3.6rem); line-height: 1.15;
+      }
+      h1 small { display: block; color: var(--violet); font-size: 0.42em; letter-spacing: 0.2em; }
+      .lead { color: var(--muted); max-width: 62ch; margin: 0 0 2rem; }
+      h2 {
+        margin: 3.2rem 0 0.4rem; font-family: var(--font-display); font-weight: 400;
+        font-size: clamp(1.5rem, 4vw, 2rem); color: var(--gold-pale);
+        border-bottom: 1px solid var(--line); padding-bottom: 0.5rem;
+      }
+      h2 .no { color: var(--violet); margin-right: 0.5rem; }
+      h3 { margin: 1.8rem 0 0.3rem; font-size: 1.05rem; color: var(--violet-bright); font-weight: 700; }
+      p { margin: 0.6rem 0; }
+      small, .dim { color: var(--muted); }
+      code {
+        background: rgba(255, 255, 255, 0.07); border-radius: 6px; padding: 0.08em 0.45em;
+        font-size: 0.9em;
+      }
+      .toc {
+        display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.4rem 0 0;
+        padding: 0; list-style: none;
+      }
+      .toc a {
+        display: inline-block; color: var(--ink); text-decoration: none; font-size: 0.82rem;
+        border: 1px solid var(--line); border-radius: 999px; padding: 0.35rem 0.95rem;
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .toc a:hover { border-color: var(--violet); color: var(--violet-bright); }
+      .card {
+        border: 1px solid var(--line); border-radius: 22px 4px 22px 4px;
+        background: var(--panel); padding: 1.2rem 1.4rem; margin: 1.1rem 0;
+      }
+      .tablewrap { overflow-x: auto; margin: 0.9rem 0; }
+      table { border-collapse: collapse; width: 100%; font-size: 0.88rem; min-width: 430px; }
+      th, td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--line); }
+      th { color: var(--violet); font-weight: 700; white-space: nowrap; }
+      td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+      .j { font-weight: 700; }
+      .j--marvelous { color: var(--gold-pale); }
+      .j--perfect { color: var(--violet-bright); }
+      .j--great { color: var(--teal); }
+      .j--good { color: var(--rose); }
+      .j--miss { color: var(--danger); }
+      .keys { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.8rem 0; }
+      .key {
+        display: grid; justify-items: center; gap: 0.1rem; min-width: 74px;
+        border: 1px solid var(--line); border-radius: 12px; padding: 0.5rem 0.7rem;
+        background: rgba(255, 255, 255, 0.03); font-size: 1.2rem;
+      }
+      .key small { font-size: 0.62rem; letter-spacing: 0.1em; }
+      ul { padding-left: 1.2rem; margin: 0.6rem 0; }
+      li { margin: 0.35rem 0; }
+      li::marker { color: var(--gold); }
+      .tip {
+        border-left: 3px solid var(--gold); background: rgba(239, 201, 110, 0.07);
+        border-radius: 0 12px 12px 0; padding: 0.7rem 1rem; margin: 1rem 0; font-size: 0.92rem;
+      }
+      .tip b:first-child { color: var(--gold); }
+      .song {
+        border: 1px solid var(--line); border-radius: 26px 4px 26px 4px;
+        background: var(--panel); padding: 1.4rem 1.5rem; margin: 1.6rem 0;
+      }
+      .song header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.8rem; }
+      .song h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; color: var(--ink); }
+      .song header small { letter-spacing: 0.08em; }
+      .meta { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; margin: 0.6rem 0 0.2rem; font-size: 0.82rem; color: var(--muted); }
+      .meta b { color: var(--ink); font-weight: 700; }
+      .practice {
+        display: inline-block; margin-top: 0.9rem; color: var(--night);
+        background: linear-gradient(120deg, var(--gold), var(--gold-pale));
+        border-radius: 999px; padding: 0.45rem 1.2rem; text-decoration: none;
+        font-weight: 700; font-size: 0.85rem;
+      }
+      .practice:hover { filter: brightness(1.08); }
+      footer { margin-top: 4rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+      footer a { color: var(--violet-bright); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="topbar">
+        <p class="eyebrow">Arcana Atelier · Grimoire</p>
+        <a class="back" href="/">↩ 回到遊戲</a>
+      </nav>
+
+      <h1>完整攻略<small>MOONLIT ARCANA STRATEGY GUIDE</small></h1>
+      <p class="lead">《月影祕律》是四軌下落式節奏遊戲：符文沿軌道落下，在抵達判定線的瞬間按下對應按鍵。本攻略涵蓋全部機制數值與七首曲目的逐首解析——所有數字都取自遊戲程式本身，不是估計值。</p>
+
+      <ul class="toc">
+        <li><a href="#basics">快速上手</a></li>
+        <li><a href="#judgment">判定與計分</a></li>
+        <li><a href="#hold">長按符文</a></li>
+        <li><a href="#latency">延遲校正</a></li>
+        <li><a href="#levels">難度爬升</a></li>
+        <li><a href="#songs">七首曲目攻略</a></li>
+        <li><a href="#mobile">手機與離線</a></li>
+        <li><a href="#faq">常見問題</a></li>
+      </ul>
+
+      <h2 id="basics"><span class="no">壹</span>快速上手</h2>
+      <div class="keys" aria-label="四軌按鍵對應">
+        <span class="key">←<small>D</small></span>
+        <span class="key">↓<small>F</small></span>
+        <span class="key">↑<small>J</small></span>
+        <span class="key">→<small>K</small></span>
+      </div>
+      <div class="tablewrap"><table>
+        <tr><th>功能</th><th>鍵盤</th></tr>
+        <tr><td>四軌符文</td><td><code>←</code> <code>↓</code> <code>↑</code> <code>→</code> 或 <code>D</code> <code>F</code> <code>J</code> <code>K</code></td></tr>
+        <tr><td>開始／確認</td><td><code>Space</code> 或 <code>Enter</code></td></tr>
+        <tr><td>暫停／繼續</td><td><code>P</code> 或 <code>Esc</code></td></tr>
+        <tr><td>暫停或結算時重玩</td><td><code>R</code></td></tr>
+      </table></div>
+      <p>手機直接點畫面下方四顆按鈕，支援雙指同時輸入。鍵盤建議左手食中指放 <code>D F</code>、右手食中指放 <code>J K</code>，全程不移手。</p>
+      <div class="tip"><b>暫停不虧。</b>暫停會記下精確位置，恢復時重新倒數三秒、譜面從原位置繼續，判定不受影響。切到別的分頁會自動暫停。</div>
+
+      <h2 id="judgment"><span class="no">貳</span>判定與計分</h2>
+      <p>五段判定依你按鍵時刻與符文正拍的時間差決定（早晚皆同標準）：</p>
+      <div class="tablewrap"><table>
+        <tr><th>判定</th><th>時間差</th><th class="num">分數權重</th><th class="num">準確率</th><th class="num">魔力</th></tr>
+        <tr><td class="j j--marvelous">Marvelous</td><td>±30 ms</td><td class="num">1000</td><td class="num">100%</td><td class="num">+1.0</td></tr>
+        <tr><td class="j j--perfect">Perfect</td><td>±55 ms</td><td class="num">900</td><td class="num">95%</td><td class="num">+0.8</td></tr>
+        <tr><td class="j j--great">Great</td><td>±90 ms</td><td class="num">700</td><td class="num">75%</td><td class="num">+0.4</td></tr>
+        <tr><td class="j j--good">Good</td><td>±140 ms</td><td class="num">400</td><td class="num">45%</td><td class="num">−0.5</td></tr>
+        <tr><td class="j j--miss">Miss</td><td>超過 ±140 ms</td><td class="num">0</td><td class="num">0%</td><td class="num">−8.0</td></tr>
+      </table></div>
+      <h3>分數</h3>
+      <p>最終分數把整張譜面的滿分正規化為 <b>1,000,000</b>——全 Marvelous 就是滿分，跟譜面音符多寡無關，所以不同歌曲、不同難度的分數可以直接比較。</p>
+      <h3>魔力（血條）</h3>
+      <p>開局 50、上限 100、下限 0。注意不對稱性：一個 <span class="j j--miss">Miss</span> 扣 8，要 8 個 <span class="j j--marvelous">Marvelous</span> 才補得回來；連 <span class="j j--good">Good</span> 都是扣的（−0.5）。魔力歸零不會中斷歌曲，但<b>結算時魔力必須大於 0 才算通過</b>，否則顯示「魔力耗盡」。求生守則只有一條：寧可亂中求穩不要斷大段——連續 Miss 是唯一真正的死因。</p>
+      <h3>評級與徽章</h3>
+      <div class="tablewrap"><table>
+        <tr><th>評級</th><th class="num">SSS</th><th class="num">SS</th><th class="num">S</th><th class="num">A</th><th class="num">B</th><th class="num">C</th><th class="num">D</th></tr>
+        <tr><td>準確率門檻</td><td class="num">99.5%</td><td class="num">98%</td><td class="num">95%</td><td class="num">90%</td><td class="num">80%</td><td class="num">70%</td><td class="num">—</td></tr>
+      </table></div>
+      <p>評級看<b>準確率</b>不看分數。另外兩個徽章：<b>Full Combo</b>＝整曲零 Miss；<b>All Perfect</b>＝零 Miss 且沒有任何 Great／Good（全部 Marvelous 或 Perfect）。最佳紀錄依「歌曲 × 難度」分開保存在本機。</p>
+      <div class="tip"><b>衝評級的算術。</b>準確率是加權平均：S（95%）大約等於「全 Perfect」的水準（95%），所以拿 S 的實際門檻是把 Great 以下壓到近乎零。SSS（99.5%）要求 Marvelous 佔絕對多數——這時勝負全在延遲校正（見第肆章）。</div>
+
+      <h2 id="hold"><span class="no">參</span>長按符文</h2>
+      <p>專家（Lv.4）譜面才會出現長按：符文帶一條尾跡，按下後<b>持續按住</b>，到尾端再放開。規則：</p>
+      <ul>
+        <li>一顆長按只算<b>一個</b>音符、只計一次分。</li>
+        <li>頭部按下時先判定一次；放開（或按住穿過尾端）時再判定一次，<b>最終取頭尾兩者中較差的一級</b>。頭按得再準、尾放太早也只有尾的等級。</li>
+        <li><b>太早放開＝斷開</b>，整顆固定給 Good——所以「不確定何時放」的答案永遠是<b>按住別放</b>：按住穿過尾端會自動完成，不會懲罰晚放。</li>
+        <li>七首歌的專家譜各有 6 顆長按，全部是把既有音符原地變成長按——音符總數不因此增加。</li>
+      </ul>
+
+      <h2 id="latency"><span class="no">肆</span>延遲校正——分數上不去先做這件事</h2>
+      <p>藍牙耳機、手機喇叭、電視螢幕都有輸出延遲（藍牙常見 100 ms 以上）。你「聽到拍點才按」，判定就永遠偏 Late——這不是手感問題，校正一次就好。</p>
+      <h3>自動量測（建議）</h3>
+      <p>選單設定區的「<b>⏱ 自動量測延遲</b>」：跟著 16 下滴答聲按任意符文鍵或點畫面（前 4 下暖身不計），量完直接套用。點得太散或太少會拒絕給值、要求重測——它不會拿噪音當校正。</p>
+      <h3>手動判讀</h3>
+      <p>結算畫面的偏移分佈圖：<b>山峰整體偏右＝你偏晚（Late）→ 延遲校正往正調</b>；偏左＝偏早 → 往負調。範圍 ±120 ms、每格 5 ms。校正後 HUD 的 EARLY／LATE 提示只會在超出 Marvelous 窗（±30 ms）時出現，窗內顯示「正中拍點」。</p>
+      <div class="tip"><b>換了耳機就重量。</b>校正值屬於「這台裝置＋這副耳機」的組合，換輸出裝置後重跑一次自動量測（十秒鐘的事）。</div>
+
+      <h2 id="levels"><span class="no">伍</span>難度爬升路線</h2>
+      <div class="tablewrap"><table>
+        <tr><th>難度</th><th>新增的東西</th><th>練什麼</th></tr>
+        <tr><td>入門 Lv.1</td><td>四分音符＋留白，無雙押</td><td>穩定跟拍、把校正調準</td></tr>
+        <tr><td>學徒 Lv.2</td><td>段落性的八分音符／切分句</td><td>句型的「進」與「出」</td></tr>
+        <tr><td>熟練 Lv.3</td><td>完整八分句＋雙押登場</td><td>雙手分工、重拍意識</td></tr>
+        <tr><td>專家 Lv.4</td><td>雙押倍增＋十六分短填充＋長按</td><td>局部爆發的手速與體力分配</td></tr>
+      </table></div>
+      <p>低難度的每一顆音符都<b>原封不動保留</b>到高難度——升級是「加料」不是「換譜」，所以在 Lv.2 練熟的拍點到 Lv.4 還在原位，肌肉記憶不作廢。</p>
+      <div class="tip"><b>雙押鐵則（背下來）。</b>全曲庫的雙押只有兩種：<b>「左＋右」（D＋K）或「下＋上」（F＋J）</b>，永遠是一手一鍵，不存在同手雙押。看到並排符文不用讀是哪兩軌——橫的就是外側兩指、直的就是內側兩指。</div>
+
+      <h2 id="songs"><span class="no">陸</span>七首曲目攻略</h2>
+      <p>建議挑戰順序（Lv.1 起步）：<b>微縮世界 → 奇想貓帽遊行 → 搖擺嘉年華 → 奇想甜心 → 月光齒輪巡遊 → 霓虹幻影 → 雲端漫舞</b>。前者慢而疏，後兩者一個密度高、一個長度長。</p>
+
+      <section class="song" id="song-miniature-world">
+        <header><h3>微縮世界</h3><small class="dim">Miniature World · 第六章 微縮庭園</small></header>
+        <p class="meta"><span>BPM <b>99.95</b></span><span>調性 <b>A minor</b></span><span>時長 <b>1:44</b></span><span>風格 <b>微縮音樂盒</b></span></p>
+        <div class="tablewrap"><table>
+          <tr><th></th><th class="num">Lv.1</th><th class="num">Lv.2</th><th class="num">Lv.3</th><th class="num">Lv.4</th></tr>
+          <tr><td>音符數</td><td class="num">115</td><td class="num">163</td><td class="num">219</td><td class="num">301</td></tr>
+          <tr><td>雙押</td><td class="num">0</td><td class="num">0</td><td class="num">8</td><td class="num">18</td></tr>
+        </table></div>
+        <ul>
+          <li>全曲庫<b>最慢、最疏</b>的一首，新手第一課首選。</li>
+          <li>曲中有兩個安靜段（約 53 秒與 67 秒處）密度砍半——是喘息點，但專家級的 6 顆長按<b>全部集中在這兩段</b>，各是連續三顆（左→上→右）。喘息段反而是「按住別放」的段落，別鬆懈。</li>
+          <li>BPM 是 99.95 不是 100——這是實測值，譜面已對齊，不用管它，照聽照打。</li>
+        </ul>
+        <a class="practice" href="/?song=miniature-world">▶ 開始練習這首</a>
+      </section>
+
+      <section class="song" id="song-parade-of-paws">
+        <header><h3>奇想貓帽遊行</h3><small class="dim">Whimsical Parade Jazz · 第四章 獸靈巡遊</small></header>
+        <p class="meta"><span>BPM <b>100</b></span><span>調性 <b>C major</b></span><span>時長 <b>1:35</b></span><span>風格 <b>奇想爵士進行曲</b></span></p>
+        <div class="tablewrap"><table>
+          <tr><th></th><th class="num">Lv.1</th><th class="num">Lv.2</th><th class="num">Lv.3</th><th class="num">Lv.4</th></tr>
+          <tr><td>音符數</td><td class="num">111</td><td class="num">159</td><td class="num">231</td><td class="num">307</td></tr>
+          <tr><td>雙押</td><td class="num">0</td><td class="num">0</td><td class="num">8</td><td class="num">20</td></tr>
+        </table></div>
+        <ul>
+          <li>行進曲的「腳印」句：左右交替為主，重拍落雙押，節奏方正好讀。</li>
+          <li>專家級的十六分「奔跑短句」只在兩個段落（約 19 秒與 58 秒起），各 16 拍——先知道它在哪，來之前深呼吸。</li>
+          <li>專家級 6 顆長按集中在開場前 16 秒，開局就進入「按住」的手感。</li>
+        </ul>
+        <a class="practice" href="/?song=parade-of-paws">▶ 開始練習這首</a>
+      </section>
+
+      <section class="song" id="song-swing-carnival">
+        <header><h3>搖擺嘉年華</h3><small class="dim">Swing Carnival · 第二章 星燈舞棚</small></header>
+        <p class="meta"><span>BPM <b>111</b></span><span>調性 <b>G major</b></span><span>時長 <b>1:10</b></span><span>風格 <b>奇幻搖擺</b></span></p>
+        <div class="tablewrap"><table>
+          <tr><th></th><th class="num">Lv.1</th><th class="num">Lv.2</th><th class="num">Lv.3</th><th class="num">Lv.4</th></tr>
+          <tr><td>音符數</td><td class="num">88</td><td class="num">128</td><td class="num">174</td><td class="num">236</td></tr>
+          <tr><td>雙押</td><td class="num">0</td><td class="num">0</td><td class="num">6</td><td class="num">16</td></tr>
+        </table></div>
+        <ul>
+          <li>全曲庫最短，但節奏最「歪」：搖擺反拍不在正半拍，而在每拍的 <b>2/3</b> 處——用「長—短、長—短」的搖擺感去唱，別當直八分打，一直八分必掉判定。</li>
+          <li>專家級在兩處（約 13 秒與 39 秒起）插入<b>三連音</b>填充，是全曲庫唯一的三連音——數「1-2-3、1-2-3」。</li>
+          <li>Lv.2 就開始出現搖擺句，是熟悉搖擺節拍最便宜的地方。</li>
+        </ul>
+        <a class="practice" href="/?song=swing-carnival">▶ 開始練習這首</a>
+      </section>
+
+      <section class="song" id="song-whimsical-cute">
+        <header><h3>奇想甜心</h3><small class="dim">Whimsical Cute · 第五章 糖霜幻境</small></header>
+        <p class="meta"><span>BPM <b>122</b></span><span>調性 <b>C major</b></span><span>時長 <b>1:53</b></span><span>風格 <b>奇想甜心流行</b></span></p>
+        <div class="tablewrap"><table>
+          <tr><th></th><th class="num">Lv.1</th><th class="num">Lv.2</th><th class="num">Lv.3</th><th class="num">Lv.4</th></tr>
+          <tr><td>音符數</td><td class="num">145</td><td class="num">197</td><td class="num">286</td><td class="num">341</td></tr>
+          <tr><td>雙押</td><td class="num">0</td><td class="num">0</td><td class="num">9</td><td class="num">20</td></tr>
+        </table></div>
+        <ul>
+          <li>結構標準的流行曲：副歌（約 40–56 秒）最密，專家級的兩段十六分填充一段在副歌內、一段在尾段反覆（約 75 秒）。</li>
+          <li>尾段（約 87 秒後）密度砍半淡出——最後一段是送分題，穩住收尾把魔力補滿。</li>
+          <li>專家級 6 顆長按全在前段（約 4–22 秒），之後專心對付密度。</li>
+        </ul>
+        <a class="practice" href="/?song=whimsical-cute">▶ 開始練習這首</a>
+      </section>
+
+      <section class="song" id="song-moonlit-gear-parade">
+        <header><h3>月光齒輪巡遊</h3><small class="dim">Moonlit Gear Parade · 第一章 發條月祭</small></header>
+        <p class="meta"><span>BPM <b>130</b></span><span>調性 <b>D minor</b></span><span>時長 <b>1:17</b></span><span>風格 <b>奇幻小調</b></span></p>
+        <div class="tablewrap"><table>
+          <tr><th></th><th class="num">Lv.1</th><th class="num">Lv.2</th><th class="num">Lv.3</th><th class="num">Lv.4</th></tr>
+          <tr><td>音符數</td><td class="num">104</td><td class="num">146</td><td class="num">202</td><td class="num">264</td></tr>
+          <tr><td>雙押</td><td class="num">0</td><td class="num">0</td><td class="num">6</td><td class="num">18</td></tr>
+        </table></div>
+        <ul>
+          <li>主題曲。曲短拍快（BPM 130 全曲庫最快），專家級密度其實是<b>七首之冠</b>（每秒 3.4 顆）——短而兇，別被「第一章」騙了。</li>
+          <li>句型以三組四音／八音模式輪替，背熟一輪之後整首都是複讀。</li>
+          <li>18 組雙押對 264 顆音符的比例偏高，Lv.4 的主要威脅是雙押接八分句的銜接。</li>
+        </ul>
+        <a class="practice" href="/?song=moonlit-gear-parade">▶ 開始練習這首</a>
+      </section>
+
+      <section class="song" id="song-neon-mirage">
+        <header><h3>霓虹幻影</h3><small class="dim">Neon Mirage · 第七章 霓虹蜃樓</small></header>
+        <p class="meta"><span>BPM <b>110</b></span><span>調性 <b>G# minor</b></span><span>時長 <b>2:22</b></span><span>風格 <b>霓虹合成波</b></span></p>
+        <div class="tablewrap"><table>
+          <tr><th></th><th class="num">Lv.1</th><th class="num">Lv.2</th><th class="num">Lv.3</th><th class="num">Lv.4</th></tr>
+          <tr><td>音符數</td><td class="num">182</td><td class="num">246</td><td class="num">328</td><td class="num">458</td></tr>
+          <tr><td>雙押</td><td class="num">0</td><td class="num">0</td><td class="num">10</td><td class="num">24</td></tr>
+        </table></div>
+        <ul>
+          <li>專家級 <b>458 顆</b>是全曲庫音符總量之王，雙押 24 組也是最多——實質的最終 BOSS。</li>
+          <li>開場即考長按：約 5–9 秒處連四顆長按輪過四條軌道（左→右→上→下），像是入場儀式，背下來。</li>
+          <li>全曲最強段是副歌（約 79–92 秒），十六分填充也從這裡開始；第二段十六分在約 127 秒。副歌前的段落刻意留了呼吸，先把魔力墊高再進去。</li>
+        </ul>
+        <a class="practice" href="/?song=neon-mirage">▶ 開始練習這首</a>
+      </section>
+
+      <section class="song" id="song-dancing-on-a-cloud">
+        <header><h3>雲端漫舞</h3><small class="dim">Dancing on a Cloud · 第三章 浮空舞會</small></header>
+        <p class="meta"><span>BPM <b>127</b></span><span>調性 <b>A minor</b></span><span>時長 <b>2:34</b></span><span>風格 <b>夢幻舞曲</b></span></p>
+        <div class="tablewrap"><table>
+          <tr><th></th><th class="num">Lv.1</th><th class="num">Lv.2</th><th class="num">Lv.3</th><th class="num">Lv.4</th></tr>
+          <tr><td>音符數</td><td class="num">169</td><td class="num">233</td><td class="num">333</td><td class="num">429</td></tr>
+          <tr><td>雙押</td><td class="num">0</td><td class="num">0</td><td class="num">12</td><td class="num">28</td></tr>
+        </table></div>
+        <ul>
+          <li>全曲庫<b>最長</b>（2:34），Lv.4 音符 429 顆、雙押 28 組——不是手速關，是<b>體力與專注力</b>關。左右流動的「波浪」句型會催眠，中後段掉的判定多半是恍神不是技術。</li>
+          <li>每 16–32 拍固定安排呼吸段，把它們當存檔點：呼吸段內把手放鬆、重整節奏感。</li>
+          <li>諷刺的是 Lv.1 反而是全曲庫最疏的譜之一（每秒 1.1 顆）——入門玩它很舒服，別因為「第三章」跳過。</li>
+        </ul>
+        <a class="practice" href="/?song=dancing-on-a-cloud">▶ 開始練習這首</a>
+      </section>
+
+      <h2 id="mobile"><span class="no">柒</span>手機與離線</h2>
+      <ul>
+        <li><b>加入主畫面</b>（iOS：分享 → 加入主畫面）後以獨立視窗執行，體驗最接近 App。</li>
+        <li><b>每首歌第一次遊玩時會快取</b>，之後離線也能玩；沒玩過的歌離線時會提示載入失敗。想出門路上玩，出門前把想玩的歌各開一次即可。</li>
+        <li>觸控四鍵支援雙指同按（雙押用兩指同時點）。</li>
+        <li>手機或藍牙耳機務必先跑一次<b>自動延遲量測</b>——這是手機分數上不去最常見的原因。</li>
+      </ul>
+
+      <h2 id="faq"><span class="no">捌</span>常見問題</h2>
+      <h3>判定總是偏晚／偏早？</h3>
+      <p>九成是輸出延遲，跑一次自動量測（第肆章）。剩下一成看結算直方圖：山形寬而散是節奏不穩，窄而偏是延遲沒校正。</p>
+      <h3>長按什麼時候放開？</h3>
+      <p>不確定就<b>按住別放</b>——按住穿過尾端會自動完成，太早放才會斷開（固定 Good）。</p>
+      <h3>最佳紀錄會跨裝置同步嗎？</h3>
+      <p>不會。紀錄存在瀏覽器本機（依歌曲 × 難度分開），換裝置或清瀏覽器資料就是新的開始。</p>
+      <h3>魔力歸零遊戲會立刻結束嗎？</h3>
+      <p>不會，歌曲會播完；但結算時魔力必須大於 0 才算通過。中途歸零也別放棄——後段打得好可以補回來。</p>
+      <h3>同一首歌的譜面每次都一樣嗎？</h3>
+      <p>完全一樣。譜面是固定規則生成的確定性資料，同曲同難度永遠同譜——可以放心背譜。</p>
+
+      <footer>
+        <p>《月影祕律 Moonlit Arcana》· 音樂由 tingyusaiart 創作 · <a href="/">回到遊戲</a> · <a href="https://tingyudeco.com/portfolio/music">完整音樂作品</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

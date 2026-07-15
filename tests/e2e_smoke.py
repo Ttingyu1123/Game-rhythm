@@ -51,6 +51,16 @@ def main() -> None:
         assert page.locator("#song-count").inner_text() == "7 首可遊玩"
         assert page.locator("#new-song-slot").count() == 0
 
+        # The strategy guide is linked from the menu and is its own document,
+        # with one section per song and a working practice deep link.
+        assert page.locator("#guide-link").is_visible()
+        page.goto(f"{BASE_URL.rstrip('/')}/guide.html", wait_until="networkidle")
+        assert "完整攻略" in page.title()
+        assert page.locator(".song").count() == 7
+        first_practice = page.locator(".song .practice").first.get_attribute("href")
+        assert first_practice and "?song=" in first_practice
+        page.goto(BASE_URL, wait_until="networkidle")
+
         song_buttons.nth(1).focus()
         page.keyboard.press("Enter")
         assert song_buttons.nth(1).get_attribute("aria-pressed") == "true"

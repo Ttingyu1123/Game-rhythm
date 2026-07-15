@@ -125,6 +125,13 @@ def main() -> None:
             assert page.locator("#error-toast").inner_text(), "expected an error message"
             assert not page.locator("#menu-screen").is_hidden()
 
+            # The guide page must survive offline as ITSELF: served from precache, not
+            # swallowed by the SPA navigate fallback. Guards against guide.html falling
+            # out of globPatterns — then the fallback would serve the game page here.
+            page.goto(f"{BASE_URL}/guide.html", wait_until="load")
+            assert "完整攻略" in page.title(), f"guide hijacked or missing: {page.title()}"
+            assert page.locator(".song").count() == 7
+
             browser.close()
     finally:
         if server.poll() is None:

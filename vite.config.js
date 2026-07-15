@@ -2,6 +2,14 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        guide: 'guide.html',
+      },
+    },
+  },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
@@ -29,6 +37,11 @@ export default defineConfig({
         // works offline. Hashed filenames make stale audio impossible.
         globPatterns: ['**/*.{js,css,html,png}'],
         navigateFallback: '/index.html',
+        // Belt-and-braces: while guide.html is precached the precache route already
+        // wins over the navigation fallback (verified by experiment — removing this
+        // line changes nothing today). It only matters if guide.html ever drops out
+        // of globPatterns, in which case the fallback would serve the game instead.
+        navigateFallbackDenylist: [/\/guide\.html/],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.endsWith('.mp3'),
