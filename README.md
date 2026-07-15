@@ -46,7 +46,7 @@ npm run preview
 | 奇想貓帽遊行 Whimsical Parade Jazz | 奇想爵士進行曲 | 100 | C major | 1:35 | `Parade_of_Paws.mp3` |
 | 奇想甜心 Whimsical Cute | 奇想甜心流行 | 122 | C major | 1:53 | `Whimsical_Cute.mp3` |
 | 微縮世界 Miniature World | 微縮音樂盒 | 99.95 | A minor | 1:44 | `Miniature_World.mp3` |
-| 霓虹幻景 Neon Mirage | 霓虹合成波 | 110 | G# minor | 2:22 | `Neon_Mirage.mp3` |
+| 霓虹幻影 Neon Mirage | 霓虹合成波 | 110 | G# minor | 2:22 | `Neon_Mirage.mp3` |
 
 各曲各級的音符數：
 
@@ -58,7 +58,7 @@ npm run preview
 | 奇想貓帽遊行 | 111 | 159 | 231 | 307 |
 | 奇想甜心 | 145 | 197 | 286 | 341 |
 | 微縮世界 | 115 | 163 | 219 | 301 |
-| 霓虹幻景 | 182 | 246 | 328 | 458 |
+| 霓虹幻影 | 182 | 246 | 328 | 458 |
 
 譜面由固定規則建立，每次遊玩完全相同。較低等級的音符會保留在下一級，再逐級加入切分、短填充與雙押。歌曲模組位於 `src/data/songs/`；六首 Suno 曲目共用 `src/rhythm/TapChartFactory.js` 的十二分拍網格產生器。
 

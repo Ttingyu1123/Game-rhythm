@@ -66,7 +66,7 @@ const chartSet = createTapChartSet({
 
 export const NEON_MIRAGE = Object.freeze({
   id: 'neon-mirage',
-  title: '霓虹幻景',
+  title: '霓虹幻影',
   titleEn: 'Neon Mirage',
   artist: 'tingyusaiart',
   chapter: '第七章 · 霓虹蜃樓',
@@ -77,6 +77,9 @@ export const NEON_MIRAGE = Object.freeze({
   duration: DURATION,
   audioType: 'file',
   audio: Object.freeze({ type: 'file', url: AUDIO_URL }),
+  links: Object.freeze({
+    mvUrl: 'https://tingyudeco.com/portfolio/ai-films/neon-mirage-k-pop-music-video',
+  }),
   defaultDifficulty: 1,
   difficulties: chartSet.difficulties,
   createChart: chartSet.createChart,

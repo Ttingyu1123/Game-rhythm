@@ -78,6 +78,9 @@ export const WHIMSICAL_CUTE = Object.freeze({
   duration: DURATION,
   audioType: 'file',
   audio: Object.freeze({ type: 'file', url: AUDIO_URL }),
+  links: Object.freeze({
+    mvUrl: 'https://youtube.com/shorts/2m5ZOkJEaoM',
+  }),
   defaultDifficulty: 1,
   difficulties: chartSet.difficulties,
   createChart: chartSet.createChart,

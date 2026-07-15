@@ -11,7 +11,7 @@ SONGS = [
     ("parade-of-paws", "奇想貓帽遊行", "Parade_of_Paws.mp3"),
     ("whimsical-cute", "奇想甜心", "Whimsical_Cute.mp3"),
     ("miniature-world", "微縮世界", "Miniature_World.mp3"),
-    ("neon-mirage", "霓虹幻景", "Neon_Mirage.mp3"),
+    ("neon-mirage", "霓虹幻影", "Neon_Mirage.mp3"),
 ]
 
 
