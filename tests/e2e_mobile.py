@@ -40,7 +40,20 @@ with sync_playwright() as playwright:
         page.locator("#song-library").bounding_box()["y"]
         < page.locator(".song-card").bounding_box()["y"]
     )
-    assert page.locator("#song-library").bounding_box()["height"] < 430
+    # Every song must be reachable as-is. Touch devices render no visible scrollbar,
+    # so a clipped song list silently hides songs and they can never be selected.
+    clipped = page.locator("#song-options").evaluate(
+        """element => {
+            const box = element.getBoundingClientRect();
+            return [...element.querySelectorAll('[data-song-id]')]
+                .filter((option) => {
+                    const rect = option.getBoundingClientRect();
+                    return rect.top < box.top - 1 || rect.bottom > box.bottom + 1;
+                })
+                .map((option) => option.dataset.songId);
+        }"""
+    )
+    assert clipped == [], f"songs hidden inside a clipped list: {clipped}"
     song_buttons.nth(3).click()
     assert page.locator("#song-card-title").inner_text() == "奇想貓帽遊行"
     song_buttons.first.click()

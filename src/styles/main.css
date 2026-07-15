@@ -1768,11 +1768,11 @@ button.song-option:focus-visible {
     grid-column: auto;
   }
 
-  /* Single column keeps growing with the catalog, so cap it and scroll inside
-     the list instead of pushing the song card and start button off-screen. */
+  /* No max-height here: touch devices draw no visible scrollbar, so capping the
+     list silently hides every song past the cut and they cannot be selected.
+     The list grows and the page itself scrolls instead. */
   .song-options {
     grid-template-columns: 1fr;
-    max-height: 320px;
   }
 
   .brand-lockup h1 {
