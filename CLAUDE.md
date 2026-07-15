@@ -6,14 +6,16 @@
 
 ```powershell
 npm run dev      # Vite dev server（瀏覽器需先有按鍵/點擊才能啟動音訊）
-npm test         # node --test（60 個單元測試，不需瀏覽器）
+npm test         # node --test（單元測試，不需瀏覽器）
 npm run build    # 產出 dist/（MP3 會被 Vite 雜湊複製）
 npm run preview  # 預覽 production build
 ```
 
-需 Node.js ≥ 20.19。`tests/e2e_*.py` 是 Playwright Python 煙霧測試，需另行啟 dev server 後手動跑：
+需 Node.js ≥ 20.19。`tests/e2e_*.py` 是 Playwright Python 測試，多數需另行啟 server 後帶 `BASE_URL` 跑：
 `npx vite --port 7421 --strictPort`，再 `PYTHONUTF8=1 BASE_URL=http://localhost:7421 python tests/e2e_smoke.py`
 （`PYTHONUTF8=1` 必加，否則印出 emoji 會 cp950 崩潰；Windows 保留了 5734-5933 等埠段，選埠避開）。
+例外：`e2e_pwa_offline.py` 自帶 server（埠 7424）且需先 `npm run build`——它會中途殺掉 server 驗證真離線。
+**別用 `context.set_offline()` 測 PWA**：它攔不到 service worker 發出的請求，SW 會照常打到網路，測了等於沒測。
 
 ## 架構
 

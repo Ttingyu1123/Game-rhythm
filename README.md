@@ -110,6 +110,12 @@ npm run preview
 
 `localStorage` 保存音量、符文速度、降低動畫設定與最佳紀錄。讀取損壞 JSON 時會回復安全預設值，不會阻止遊戲啟動。
 
+## 離線遊玩（PWA）
+
+遊戲可加入手機主畫面（iOS Safari：分享 → 加入主畫面），以獨立視窗開啟。Service worker 預快取遊戲殼（約 225 KB）；**每首歌在第一次遊玩時快取**，之後離線也能玩——不會在首次造訪就強迫下載全部 7 首 MP3（約 18 MB）。沒播過的歌在離線時會顯示載入錯誤並退回選曲，不會卡住。
+
+離線行為由 `tests/e2e_pwa_offline.py` 驗證：它自帶 preview server 並**中途把 server 殺掉**——不用 Playwright 的 `set_offline()`，因為那攔不到 service worker 的請求，測不出真離線。
+
 ## 正式音樂
 
 正式音樂位於 `assets/music/`：
