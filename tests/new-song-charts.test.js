@@ -28,6 +28,30 @@ const EXPECTATIONS = Object.freeze([
     noteRanges: [[110, 122], [158, 175], [225, 245], [300, 325]],
     doubleCounts: [0, 0, 8, 20],
   }),
+  Object.freeze({
+    id: 'whimsical-cute',
+    bpm: 122,
+    duration: 112.88,
+    beatOffset: 0.416,
+    noteRanges: [[140, 150], [190, 205], [280, 295], [335, 350]],
+    doubleCounts: [0, 0, 9, 20],
+  }),
+  Object.freeze({
+    id: 'miniature-world',
+    bpm: 99.95,
+    duration: 104.12,
+    beatOffset: 0.016,
+    noteRanges: [[110, 120], [158, 168], [214, 225], [295, 308]],
+    doubleCounts: [0, 0, 8, 18],
+  }),
+  Object.freeze({
+    id: 'neon-mirage',
+    bpm: 110,
+    duration: 142.24,
+    beatOffset: 0.689,
+    noteRanges: [[176, 188], [240, 252], [320, 335], [450, 465]],
+    doubleCounts: [0, 0, 10, 24],
+  }),
 ]);
 
 function simultaneousCounts(notes) {

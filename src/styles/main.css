@@ -1768,8 +1768,11 @@ button.song-option:focus-visible {
     grid-column: auto;
   }
 
+  /* Single column keeps growing with the catalog, so cap it and scroll inside
+     the list instead of pushing the song card and start button off-screen. */
   .song-options {
     grid-template-columns: 1fr;
+    max-height: 320px;
   }
 
   .brand-lockup h1 {

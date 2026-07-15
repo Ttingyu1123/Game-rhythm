@@ -9,6 +9,9 @@ SONGS = [
     ("swing-carnival", "搖擺嘉年華", "Swing_Carnival.mp3"),
     ("dancing-on-a-cloud", "雲端漫舞", "Dancing_on_a_Cloud.mp3"),
     ("parade-of-paws", "奇想貓帽遊行", "Parade_of_Paws.mp3"),
+    ("whimsical-cute", "奇想甜心", "Whimsical_Cute.mp3"),
+    ("miniature-world", "微縮世界", "Miniature_World.mp3"),
+    ("neon-mirage", "霓虹幻景", "Neon_Mirage.mp3"),
 ]
 
 
@@ -84,7 +87,7 @@ def main() -> None:
     assert not page_errors, f"Page errors: {page_errors}"
     assert not console_errors, f"Console errors: {console_errors}"
     assert set(audio_responses) >= {filename for _, _, filename in SONGS}
-    print("SONG_LOADING_E2E_OK three MP3 files decoded and started")
+    print(f"SONG_LOADING_E2E_OK {len(SONGS)} MP3 files decoded and started")
     print("AUDIO_RESPONSES", audio_responses)
     print("CONSOLE_ERRORS 0")
     print("PAGE_ERRORS 0")

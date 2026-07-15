@@ -34,9 +34,12 @@ def main() -> None:
             "swing-carnival",
             "dancing-on-a-cloud",
             "parade-of-paws",
+            "whimsical-cute",
+            "miniature-world",
+            "neon-mirage",
         ]
-        assert song_buttons.count() == 4, (
-            f"Expected four song buttons; page errors: {page_errors}; "
+        assert song_buttons.count() == len(expected_song_ids), (
+            f"Expected {len(expected_song_ids)} song buttons; page errors: {page_errors}; "
             f"console errors: {console_errors}"
         )
         assert [
@@ -45,7 +48,7 @@ def main() -> None:
         ] == expected_song_ids
         assert song_buttons.first.get_attribute("aria-pressed") == "true"
         assert page.locator('[data-song-id][aria-pressed="true"]').count() == 1
-        assert page.locator("#song-count").inner_text() == "4 首可遊玩"
+        assert page.locator("#song-count").inner_text() == "7 首可遊玩"
         assert page.locator("#new-song-slot").count() == 0
 
         song_buttons.nth(1).focus()

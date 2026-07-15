@@ -1,7 +1,10 @@
 import { DANCING_ON_A_CLOUD } from './songs/dancingOnACloud.js';
+import { MINIATURE_WORLD } from './songs/miniatureWorld.js';
 import { MOONLIT_GEAR_PARADE } from './songs/moonlitGearParade.js';
+import { NEON_MIRAGE } from './songs/neonMirage.js';
 import { PARADE_OF_PAWS } from './songs/paradeOfPaws.js';
 import { SWING_CARNIVAL } from './songs/swingCarnival.js';
+import { WHIMSICAL_CUTE } from './songs/whimsicalCute.js';
 
 function assertSong(song, index) {
   if (!song || typeof song !== 'object') {
@@ -54,4 +57,7 @@ export const SONG_CATALOG = createSongCatalog([
   SWING_CARNIVAL,
   DANCING_ON_A_CLOUD,
   PARADE_OF_PAWS,
+  WHIMSICAL_CUTE,
+  MINIATURE_WORLD,
+  NEON_MIRAGE,
 ]);

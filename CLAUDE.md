@@ -40,6 +40,8 @@ npm run preview  # 預覽 production build
 
 專家譜面的長按是用「把既有 tap 就地轉成 hold」達成，不是新增音符——所以音符數、雙押數、README 表格、玩家紀錄全部不變。`addHold(beat, lane, lengthBeats)` 在 build 尾端（所有音符都放好之後）呼叫，它 no-op 掉 `addPulse`（該 pulse 已存在）只登記 hold 長度，map 階段再把該音符標成 hold。前提：目標 (beat, lane) 是既有單一音符（非雙押），且長按區間內該軌道要有足夠空檔（`ChartValidator` 會擋重疊）。找安全轉換點的方式見 git 史的分析腳本。
 
+**lane 填錯會靜默失效**：`addPulse` 只在 pulse 不存在時建立音符，所以 `addHold(beat, 'up', n)` 若該 pulse 實際是別的軌道，hold 只會登記在 `holds` map 的無主 key 上，map 階段找不到對應音符——不報錯、不中斷，該顆就只是普通 tap。憑記憶推 pattern 索引很容易猜錯 lane（2026-07 加三首新曲時 6 顆長按錯了 3 顆）。務必先 build 出譜面、從實際音符讀回 (beat, lane) 再寫 `addHold`，並在 `npm test` 後確認專家譜的 hold 數量與預期相符（`hold-charts` 只擋 <4，數量少一兩顆抓不到）。
+
 ## 加一首新歌
 
 1. MP3 放 `assets/music/`（歌曲模組用 `new URL('...', import.meta.url).href` 引用，讓 Vite 雜湊複製）。

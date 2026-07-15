@@ -1,6 +1,6 @@
 # 月影祕律 Moonlit Arcana
 
-《月影祕律》是一款原創四軌奇幻節奏遊戲。曲目星圖目前收錄 4 首正式歌曲與 16 張固定譜面；譜面和 MP3 音樂共用 `AudioContext.currentTime`，畫面掉幀不會累積時間誤差。
+《月影祕律》是一款原創四軌奇幻節奏遊戲。曲目星圖目前收錄 7 首正式歌曲與 28 張固定譜面；譜面和 MP3 音樂共用 `AudioContext.currentTime`，畫面掉幀不會累積時間誤差。
 
 ## 啟動
 
@@ -36,7 +36,7 @@ npm run preview
 
 ## 目前曲庫
 
-4 首歌曲皆由 tingyusaiart 創作，提供入門 Lv.1、學徒 Lv.2、熟練 Lv.3 與專家 Lv.4；進入選曲時預設為入門等級。
+7 首歌曲皆由 tingyusaiart 創作，提供入門 Lv.1、學徒 Lv.2、熟練 Lv.3 與專家 Lv.4；進入選曲時預設為入門等級。
 
 | 曲目 | 風格 | BPM | 調性 | 時長 | 音訊 |
 |---|---|---:|---|---:|---|
@@ -44,6 +44,9 @@ npm run preview
 | 搖擺嘉年華 Swing Carnival | 奇幻搖擺 | 111 | G major | 1:10 | `Swing_Carnival.mp3` |
 | 雲端漫舞 Dancing on a Cloud | 夢幻舞曲 | 127 | A minor | 2:34 | `Dancing_on_a_Cloud.mp3` |
 | 奇想貓帽遊行 Whimsical Parade Jazz | 奇想爵士進行曲 | 100 | C major | 1:35 | `Parade_of_Paws.mp3` |
+| 奇想甜心 Whimsical Cute | 奇想甜心流行 | 122 | C major | 1:53 | `Whimsical_Cute.mp3` |
+| 微縮世界 Miniature World | 微縮音樂盒 | 99.95 | A minor | 1:44 | `Miniature_World.mp3` |
+| 霓虹幻景 Neon Mirage | 霓虹合成波 | 110 | G# minor | 2:22 | `Neon_Mirage.mp3` |
 
 各曲各級的音符數：
 
@@ -53,14 +56,19 @@ npm run preview
 | 搖擺嘉年華 | 88 | 128 | 174 | 236 |
 | 雲端漫舞 | 169 | 233 | 333 | 429 |
 | 奇想貓帽遊行 | 111 | 159 | 231 | 307 |
+| 奇想甜心 | 145 | 197 | 286 | 341 |
+| 微縮世界 | 115 | 163 | 219 | 301 |
+| 霓虹幻景 | 182 | 246 | 328 | 458 |
 
-譜面由固定規則建立，每次遊玩完全相同。較低等級的音符會保留在下一級，再逐級加入切分、短填充與雙押。歌曲模組位於 `src/data/songs/`；三首 Suno 新曲共用 `src/rhythm/TapChartFactory.js` 的十二分拍網格產生器。
+譜面由固定規則建立，每次遊玩完全相同。較低等級的音符會保留在下一級，再逐級加入切分、短填充與雙押。歌曲模組位於 `src/data/songs/`；六首 Suno 曲目共用 `src/rhythm/TapChartFactory.js` 的十二分拍網格產生器。
+
+《微縮世界》實測速度為 99.95 BPM（非整數）：以 100 BPM 生成譜面時整曲會累積約 27 ms 偏移、逼近 Marvelous 判定窗（±30 ms），改用 99.95 後全曲最大偏移降到約 5 ms。
 
 ## 曲目星圖
 
 選曲畫面的「曲目星圖」由 `src/data/songCatalog.js` 產生。每首可玩歌曲都有獨立 ID、音訊、歌曲資訊、難度與譜面；最佳紀錄依 `songId + difficultyId` 分開保存。
 
-目前 4 首歌曲都可正式遊玩。切換曲目會同步更新歌曲資訊、難度與獨立紀錄，不會沿用上一首歌的音訊或譜面。
+目前 7 首歌曲都可正式遊玩。切換曲目會同步更新歌曲資訊、難度與獨立紀錄，不會沿用上一首歌的音訊或譜面。選曲清單在桌機與 520px 以下的手機都有高度上限並在清單內捲動，曲庫增加不會把開始鍵擠出畫面。
 
 ### 加入下一首歌曲
 
@@ -107,10 +115,13 @@ assets/music/main-theme.mp3
 assets/music/Swing_Carnival.mp3
 assets/music/Dancing_on_a_Cloud.mp3
 assets/music/Parade_of_Paws.mp3
+assets/music/Whimsical_Cute.mp3
+assets/music/Miniature_World.mp3
+assets/music/Neon_Mirage.mp3
 ```
 
 每首歌曲皆依音樂分析結果設定自己的 BPM、首拍偏移與時長，並針對主要段落建立固定譜面。音樂檔載入或解碼失敗時，遊戲會回到選曲畫面並顯示錯誤，不會悄悄改播其他歌曲。
 
 ## 已知範圍
 
-目前曲庫收錄 4 首可玩歌曲，全部具有 Lv.1–Lv.4，專家等級加入長按符文。延遲校正、新手教學（選單「如何遊玩」）與結算偏移分析圖皆已實作。完整自動延遲量測、長按尾端獨立評級與更豐富的教學關卡屬於後續階段。
+目前曲庫收錄 7 首可玩歌曲，全部具有 Lv.1–Lv.4，專家等級加入長按符文。延遲校正、新手教學（選單「如何遊玩」）與結算偏移分析圖皆已實作。完整自動延遲量測、長按尾端獨立評級與更豐富的教學關卡屬於後續階段。

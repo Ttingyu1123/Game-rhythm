@@ -22,15 +22,18 @@ const createMockSong = (id) => ({
   createChart: () => ({ songId: id, notes: [] }),
 });
 
-test('production catalog exposes all four playable songs in chapter order', () => {
+test('production catalog exposes all seven playable songs in chapter order', () => {
   const expectedSongs = [
     ['moonlit-gear-parade', 'main-theme.mp3'],
     ['swing-carnival', 'Swing_Carnival.mp3'],
     ['dancing-on-a-cloud', 'Dancing_on_a_Cloud.mp3'],
     ['parade-of-paws', 'Parade_of_Paws.mp3'],
+    ['whimsical-cute', 'Whimsical_Cute.mp3'],
+    ['miniature-world', 'Miniature_World.mp3'],
+    ['neon-mirage', 'Neon_Mirage.mp3'],
   ];
 
-  assert.equal(SONG_CATALOG.length, 4);
+  assert.equal(SONG_CATALOG.length, 7);
   assert.equal(Object.isFrozen(SONG_CATALOG), true);
   assert.deepEqual(SONG_CATALOG.map(({ id }) => id), expectedSongs.map(([id]) => id));
 

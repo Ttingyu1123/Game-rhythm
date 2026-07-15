@@ -27,8 +27,8 @@ with sync_playwright() as playwright:
     page.on("pageerror", lambda error: page_errors.append(str(error)))
     page.goto(BASE_URL, wait_until="networkidle")
     song_buttons = page.locator("[data-song-id]")
-    assert song_buttons.count() == 4
-    assert page.locator("#song-count").inner_text() == "4 首可遊玩"
+    assert song_buttons.count() == 7
+    assert page.locator("#song-count").inner_text() == "7 首可遊玩"
     assert page.locator("#new-song-slot").count() == 0
     song_detail_font_size = page.locator(".song-option__details").first.evaluate(
         "element => parseFloat(getComputedStyle(element).fontSize)"
