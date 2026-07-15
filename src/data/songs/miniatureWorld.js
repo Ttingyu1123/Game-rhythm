@@ -83,6 +83,7 @@ export const MINIATURE_WORLD = Object.freeze({
   audio: Object.freeze({ type: 'file', url: AUDIO_URL }),
   links: Object.freeze({
     mvUrl: 'https://youtube.com/shorts/bD8lenD30uw',
+    musicUrl: 'https://tingyudeco.com/portfolio/music?song=miniature-world',
   }),
   defaultDifficulty: 1,
   difficulties: chartSet.difficulties,

@@ -79,6 +79,8 @@ export const NEON_MIRAGE = Object.freeze({
   audio: Object.freeze({ type: 'file', url: AUDIO_URL }),
   links: Object.freeze({
     mvUrl: 'https://tingyudeco.com/portfolio/ai-films/neon-mirage-k-pop-music-video',
+    // The music page slug carries a -1 suffix; plain neon-mirage does not exist there.
+    musicUrl: 'https://tingyudeco.com/portfolio/music?song=neon-mirage-1',
   }),
   defaultDifficulty: 1,
   difficulties: chartSet.difficulties,

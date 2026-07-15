@@ -80,6 +80,7 @@ export const WHIMSICAL_CUTE = Object.freeze({
   audio: Object.freeze({ type: 'file', url: AUDIO_URL }),
   links: Object.freeze({
     mvUrl: 'https://youtube.com/shorts/2m5ZOkJEaoM',
+    musicUrl: 'https://tingyudeco.com/portfolio/music?song=whimsical-cute',
   }),
   defaultDifficulty: 1,
   difficulties: chartSet.difficulties,
