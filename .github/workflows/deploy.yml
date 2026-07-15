@@ -45,10 +45,13 @@ jobs:
             curl -sf "$BASE_URL" > /dev/null && break
             sleep 1
           done
-          for suite in e2e_smoke e2e_mobile e2e_song_loading e2e_ios_audio_unlock; do
+          for suite in e2e_smoke e2e_mobile e2e_song_loading e2e_ios_audio_unlock e2e_latency_wizard; do
             echo "=== $suite"
             python "tests/$suite.py"
           done
+      # Self-hosted true-offline check: starts its own preview on 7424 and kills it.
+      - name: PWA offline e2e
+        run: python tests/e2e_pwa_offline.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
