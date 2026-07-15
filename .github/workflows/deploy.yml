@@ -26,10 +26,36 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      # E2E runs against the production build (vite preview), not the dev server,
+      # so what gets tested is byte-identical to what gets deployed.
+      # localhost, not 127.0.0.1: vite preview may bind the IPv6 loopback only.
+      - name: Run e2e suites against the production build
+        env:
+          BASE_URL: http://localhost:4173
+        run: |
+          npx vite preview --port 4173 --strictPort &
+          for i in $(seq 1 30); do
+            curl -sf "$BASE_URL" > /dev/null && break
+            sleep 1
+          done
+          for suite in e2e_smoke e2e_mobile e2e_song_loading e2e_ios_audio_unlock; do
+            echo "=== $suite"
+            python "tests/$suite.py"
+          done
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
   deploy:
+    # Guarded so a workflow_dispatch on a topic branch can exercise the test gate
+    # without publishing that branch to production.
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
