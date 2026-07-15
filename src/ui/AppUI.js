@@ -36,6 +36,9 @@ export class AppUI {
       'hud-judgment', 'hud-timing', 'countdown-overlay', 'pause-button',
       'pause-overlay', 'pause-volume', 'pause-speed', 'resume-button', 'restart-button',
       'help-button', 'help-overlay', 'help-close-button',
+      'calibration-button', 'calibration-overlay', 'calibration-status', 'calibration-count',
+      'calibration-result', 'calibration-apply', 'calibration-retry', 'calibration-close',
+      'calibration-tap-zone',
       'quit-button', 'result-status', 'result-grade', 'new-record', 'result-score',
       'result-accuracy', 'result-combo', 'result-offset', 'result-marvelous',
       'result-perfect', 'result-great', 'result-good', 'result-miss', 'result-badge',
@@ -269,6 +272,48 @@ export class AppUI {
 
   get helpVisible() {
     return !this.elements['help-overlay'].hidden;
+  }
+
+  showCalibration(visible) {
+    this.elements['calibration-overlay'].hidden = !visible;
+    if (visible) {
+      this.elements['calibration-tap-zone'].focus();
+    } else {
+      this.elements['calibration-button'].focus();
+    }
+  }
+
+  get calibrationVisible() {
+    return !this.elements['calibration-overlay'].hidden;
+  }
+
+  setCalibrationProgress(counted, target) {
+    this.elements['calibration-count'].textContent = `已記錄 ${counted} / ${target} 下`;
+    this.elements['calibration-result'].hidden = true;
+    this.elements['calibration-apply'].disabled = true;
+  }
+
+  setCalibrationResult(summary) {
+    const result = this.elements['calibration-result'];
+    const apply = this.elements['calibration-apply'];
+    if (!summary) {
+      result.hidden = true;
+      apply.disabled = true;
+      return;
+    }
+    result.hidden = false;
+    if (summary.ok) {
+      const sign = summary.suggestedOffsetMs > 0 ? '+' : '';
+      result.textContent =
+        `量到 ${summary.sampleCount} 下，中位偏移 ${summary.medianMs} ms（落差 ±${summary.spreadMs} ms）`
+        + `——建議延遲校正 ${sign}${summary.suggestedOffsetMs} ms。`;
+      apply.disabled = false;
+    } else {
+      result.textContent = summary.reason === 'not-enough-taps'
+        ? `只記錄到 ${summary.sampleCount} 下，不足以判讀——按「重測」再來一次。`
+        : `這輪點得太分散（落差 ±${summary.spreadMs} ms），不敢給建議——按「重測」再來一次。`;
+      apply.disabled = true;
+    }
   }
 
   showResults(result, { passed, newRecord }) {

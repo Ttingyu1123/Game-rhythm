@@ -38,6 +38,16 @@ test('records negative offsets as early and positive offsets as late', () => {
   assert.ok(late.offset > 0);
 });
 
+test('marvelous-window hits read as on-time, not early or late', () => {
+  const inside = resolvePress([note('tiny', 1, 'left')], 'left', 1.02);
+  assert.equal(inside.judgment, 'marvelous');
+  assert.equal(inside.timing, 'on-time');
+
+  const edge = resolvePress([note('edge', 1, 'right')], 'right', 1.031);
+  assert.equal(edge.judgment, 'perfect');
+  assert.equal(edge.timing, 'late');
+});
+
 test('keeps simultaneous notes in other lanes available', () => {
   const notes = [note('left', 1, 'left'), note('right', 1, 'right')];
 

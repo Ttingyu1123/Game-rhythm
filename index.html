@@ -115,6 +115,9 @@
                   aria-describedby="offset-help" />
               </label>
               <p id="offset-help" class="settings-note">結算若總是偏早就往負調，偏晚往正調。</p>
+              <button id="calibration-button" class="text-button" type="button">
+                ⏱ 自動量測延遲
+              </button>
               <label class="setting-toggle" for="reduced-motion">
                 <input id="reduced-motion" type="checkbox" />
                 <span class="toggle-mark" aria-hidden="true"></span>
@@ -267,6 +270,27 @@
 
         <div class="help-actions">
           <button id="help-close-button" class="primary-button primary-button--compact" type="button">開始練習</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="calibration-overlay" class="modal-layer" role="dialog" aria-modal="true" aria-labelledby="calibration-title" hidden>
+      <div class="pause-card calibration-card">
+        <p class="eyebrow">Latency Rite · 延遲量測</p>
+        <h2 id="calibration-title">自動延遲量測</h2>
+        <p id="calibration-status">跟著滴答聲的節奏，按任意符文鍵（D F J K／方向鍵／Space）或點擊下方區域。前四下是暖身，不列入計算。</p>
+        <!-- Deliberately not a <button>: InputManager ignores lane keys and Space while
+             focus sits on interactive elements, and a native button would also turn
+             Space into a click. A tabindex="-1" div keeps the global key path alive. -->
+        <div id="calibration-tap-zone" class="calibration-tap-zone" role="button" tabindex="-1">
+          <span id="calibration-count">已記錄 0 / 12 下</span>
+          <small>點這裡也算一下</small>
+        </div>
+        <p id="calibration-result" class="settings-note" aria-live="polite" hidden></p>
+        <div class="help-actions">
+          <button id="calibration-apply" class="primary-button primary-button--compact" type="button" disabled>套用建議值</button>
+          <button id="calibration-retry" class="secondary-button" type="button">重測</button>
+          <button id="calibration-close" class="text-button" type="button">取消</button>
         </div>
       </div>
     </div>

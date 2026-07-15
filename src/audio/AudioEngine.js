@@ -175,6 +175,49 @@ export class AudioEngine {
     return this.volume;
   }
 
+  // Schedules metronome ticks for the latency wizard on the sfx chain and returns
+  // their exact context-clock times; taps are compared against these on the SAME
+  // clock, so output latency shows up in the measurement — which is the point.
+  // Caller must have unlocked the context inside a user gesture first.
+  scheduleCalibrationTicks({ count = 20, interval = 0.6, leadIn = 1.2, accentEvery = 4 } = {}) {
+    const context = this.ensureContext();
+    const start = context.currentTime + Math.max(0.05, leadIn);
+    const times = [];
+    const oscillators = [];
+    for (let index = 0; index < count; index += 1) {
+      const at = start + index * interval;
+      const oscillator = context.createOscillator();
+      const envelope = context.createGain();
+      oscillator.type = 'square';
+      oscillator.frequency.setValueAtTime(index % accentEvery === 0 ? 1567.98 : 1046.5, at);
+      envelope.gain.setValueAtTime(0.0001, at);
+      envelope.gain.exponentialRampToValueAtTime(0.2, at + 0.004);
+      envelope.gain.exponentialRampToValueAtTime(0.0001, at + 0.05);
+      oscillator.connect(envelope);
+      envelope.connect(this.sfxGain);
+      oscillator.start(at);
+      oscillator.stop(at + 0.06);
+      times.push(at);
+      oscillators.push(oscillator);
+    }
+    return {
+      times,
+      cancel: () => {
+        for (const oscillator of oscillators) {
+          try {
+            oscillator.stop();
+          } catch {
+            // Already finished ticks are safe to ignore.
+          }
+        }
+      },
+    };
+  }
+
+  get clockTime() {
+    return this.context ? this.context.currentTime : 0;
+  }
+
   playHit(judgment) {
     if (!this.context || !this.sfxGain || this.context.state !== 'running') return;
     const now = this.context.currentTime;

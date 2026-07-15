@@ -61,7 +61,9 @@ export function resolvePress(notes, lane, songTime, windows = DEFAULT_WINDOWS) {
     note: candidate,
     judgment,
     offset,
-    timing: offset < 0 ? 'early' : offset > 0 ? 'late' : 'on-time',
+    // Within the marvelous window the hit IS on time by the game's own definition;
+    // flagging a ±10ms press as EARLY/LATE is noise, not feedback.
+    timing: offset < -windows.marvelous ? 'early' : offset > windows.marvelous ? 'late' : 'on-time',
     isHold: hold,
     phase: hold ? 'head' : 'tap',
   };

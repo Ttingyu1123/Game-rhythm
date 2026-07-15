@@ -4,6 +4,7 @@ import { SONG_CATALOG, findSongById } from '../data/songCatalog.js';
 import { InputManager } from '../input/InputManager.js';
 import { CanvasRenderer } from '../rendering/CanvasRenderer.js';
 import { validateChart } from '../rhythm/ChartValidator.js';
+import { offsetsFromTaps, summarizeCalibration } from '../rhythm/LatencyCalibration.js';
 import { resolveAutoMisses, resolveHoldRelease, resolvePress } from '../rhythm/JudgmentSystem.js';
 import { SessionStats } from '../rhythm/SessionStats.js';
 import { SaveStore } from '../storage/SaveStore.js';
@@ -21,6 +22,9 @@ function pickInitialSong(songs) {
     return songs[0];
   }
 }
+
+// 16 ticks at 100 BPM (~10.5s); the first bar is warm-up, leaving 12 measured taps.
+const CALIBRATION = Object.freeze({ count: 16, interval: 0.6, leadIn: 1.2, warmupClicks: 4 });
 
 const AUDIO_OFFSET_LIMIT_MS = 120;
 const clampOffsetMs = (value) => {
@@ -66,6 +70,7 @@ export class Game {
     this.rafId = null;
     this.sessionToken = 0;
     this.resumePending = false;
+    this.calibration = null;
     this.frame = this.frame.bind(this);
     this.onVisibilityChange = this.onVisibilityChange.bind(this);
 
@@ -92,6 +97,15 @@ export class Game {
     el['replay-button'].addEventListener('click', () => this.startNewSession());
     el['help-button'].addEventListener('click', () => this.ui.showHelp(true));
     el['help-close-button'].addEventListener('click', () => this.ui.showHelp(false));
+    el['calibration-button'].addEventListener('click', () => this.startLatencyWizard());
+    el['calibration-retry'].addEventListener('click', () => this.startLatencyWizard());
+    el['calibration-apply'].addEventListener('click', () => this.applyCalibration());
+    el['calibration-close'].addEventListener('click', () => this.closeLatencyWizard());
+    // pointerdown, not click: click waits for release and would skew the measurement.
+    el['calibration-tap-zone'].addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      this.recordCalibrationTap();
+    });
     el['help-overlay'].addEventListener('click', (event) => {
       if (event.target === el['help-overlay']) this.ui.showHelp(false);
     });
@@ -298,6 +312,10 @@ export class Game {
   handleLanePress(lane) {
     this.pressedLanes.add(lane);
     this.ui.setPressed(lane, true);
+    if (this.calibration) {
+      this.recordCalibrationTap();
+      return;
+    }
     if (this.state.current !== 'playing') return;
 
     const result = resolvePress(this.chart.notes, lane, this.judgeTime());
@@ -333,6 +351,10 @@ export class Game {
   }
 
   togglePause() {
+    if (this.ui.calibrationVisible) {
+      this.closeLatencyWizard();
+      return;
+    }
     if (this.ui.helpVisible) {
       this.ui.showHelp(false);
       return;
@@ -376,6 +398,10 @@ export class Game {
   }
 
   confirmCurrentScreen() {
+    if (this.ui.calibrationVisible) {
+      this.recordCalibrationTap();
+      return;
+    }
     if (this.ui.helpVisible) {
       this.ui.showHelp(false);
       return;
@@ -416,12 +442,85 @@ export class Game {
     this.ui.showScreen('menu');
   }
 
+  // The wizard measures the full loop the player actually experiences: scheduled tick
+  // (audio out) -> ear -> press -> handler, all read on the AudioContext clock, so the
+  // median offset is exactly what judgeTime() should be shifted by.
+  startLatencyWizard() {
+    if (this.state.current !== 'menu') return;
+    this.teardownCalibration();
+    // Same gesture-task rule as startNewSession: iOS only unlocks inside the tap.
+    this.audio.unlock();
+    const ticks = this.audio.scheduleCalibrationTicks({
+      count: CALIBRATION.count,
+      interval: CALIBRATION.interval,
+      leadIn: CALIBRATION.leadIn,
+      accentEvery: CALIBRATION.warmupClicks,
+    });
+    const endTime = ticks.times.at(-1) + CALIBRATION.interval;
+    this.calibration = {
+      ticks,
+      taps: [],
+      done: false,
+      summary: null,
+      watcher: setInterval(() => {
+        if (this.audio.clockTime >= endTime) this.finishLatencyWizard();
+      }, 120),
+    };
+    this.ui.showCalibration(true);
+    this.ui.setCalibrationProgress(0, CALIBRATION.count - CALIBRATION.warmupClicks);
+  }
+
+  recordCalibrationTap() {
+    const session = this.calibration;
+    if (!session || session.done) return;
+    session.taps.push(this.audio.clockTime);
+    const counted = offsetsFromTaps(session.ticks.times, session.taps, {
+      warmupClicks: CALIBRATION.warmupClicks,
+    }).length;
+    this.ui.setCalibrationProgress(counted, CALIBRATION.count - CALIBRATION.warmupClicks);
+  }
+
+  finishLatencyWizard() {
+    const session = this.calibration;
+    if (!session || session.done) return;
+    session.done = true;
+    clearInterval(session.watcher);
+    session.ticks.cancel();
+    const offsets = offsetsFromTaps(session.ticks.times, session.taps, {
+      warmupClicks: CALIBRATION.warmupClicks,
+    });
+    session.summary = summarizeCalibration(offsets);
+    this.ui.setCalibrationResult(session.summary);
+  }
+
+  applyCalibration() {
+    const summary = this.calibration?.summary;
+    if (!summary?.ok) return;
+    this.settings = this.saveStore.updateSettings({ audioOffsetMs: summary.suggestedOffsetMs });
+    this.ui.setAudioOffsetDisplay(summary.suggestedOffsetMs);
+    this.closeLatencyWizard();
+  }
+
+  teardownCalibration() {
+    if (!this.calibration) return;
+    clearInterval(this.calibration.watcher);
+    this.calibration.ticks.cancel();
+    this.calibration = null;
+  }
+
+  closeLatencyWizard() {
+    this.teardownCalibration();
+    this.ui.showCalibration(false);
+  }
+
   onVisibilityChange() {
+    if (document.hidden && this.ui.calibrationVisible) this.closeLatencyWizard();
     if (document.hidden && this.state.current === 'playing') this.togglePause();
   }
 
   destroy() {
     this.sessionToken += 1;
+    this.teardownCalibration();
     this.audio.stop();
     this.stopLoop();
     this.input.destroy();

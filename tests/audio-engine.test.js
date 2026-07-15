@@ -23,6 +23,24 @@ class FakeSource extends FakeNode {
   }
 }
 
+class FakeOscillator extends FakeNode {
+  constructor() {
+    super();
+    this.type = 'sine';
+    this.frequency = { setValueAtTime: () => {} };
+    this.startTimes = [];
+    this.stopCalls = 0;
+  }
+
+  start(when) {
+    this.startTimes.push(when);
+  }
+
+  stop() {
+    this.stopCalls += 1;
+  }
+}
+
 class FakeContext {
   constructor() {
     this.currentTime = 5;
@@ -30,6 +48,7 @@ class FakeContext {
     this.state = 'suspended';
     this.destination = new FakeNode();
     this.sources = [];
+    this.oscillators = [];
   }
 
   async resume() {
@@ -38,7 +57,11 @@ class FakeContext {
 
   createGain() {
     const node = new FakeNode();
-    node.gain = { value: 1 };
+    node.gain = {
+      value: 1,
+      setValueAtTime: () => {},
+      exponentialRampToValueAtTime: () => {},
+    };
     return node;
   }
 
@@ -46,6 +69,12 @@ class FakeContext {
     const source = new FakeSource();
     this.sources.push(source);
     return source;
+  }
+
+  createOscillator() {
+    const oscillator = new FakeOscillator();
+    this.oscillators.push(oscillator);
+    return oscillator;
   }
 }
 
@@ -295,4 +324,27 @@ test('unlock swallows a rejected resume instead of throwing at the caller', () =
   });
 
   assert.doesNotThrow(() => engine.unlock());
+});
+
+test('calibration ticks are scheduled on the context clock and cancellable', () => {
+  const context = new FakeContext();
+  const engine = new AudioEngine({
+    duration: 60,
+    contextFactory: () => context,
+    bufferFactory: () => ({ duration: 60 }),
+  });
+  engine.unlock();
+
+  const ticks = engine.scheduleCalibrationTicks({ count: 6, interval: 0.5, leadIn: 1 });
+
+  assert.equal(ticks.times.length, 6);
+  assert.equal(context.oscillators.length, 6);
+  assert.ok(Math.abs(ticks.times[0] - (context.currentTime + 1)) < 1e-9);
+  for (let i = 1; i < ticks.times.length; i += 1) {
+    assert.ok(Math.abs(ticks.times[i] - ticks.times[i - 1] - 0.5) < 1e-9);
+  }
+
+  ticks.cancel();
+  // start() schedules one stop; cancel adds another on every oscillator.
+  assert.ok(context.oscillators.every((osc) => osc.stopCalls >= 2));
 });

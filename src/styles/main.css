@@ -1465,6 +1465,45 @@ button.song-option:focus-visible {
   margin: 1rem 0;
 }
 
+.calibration-card #calibration-status {
+  margin-bottom: 1.2rem;
+}
+
+.calibration-tap-zone {
+  display: grid;
+  width: 100%;
+  padding: 1.6rem 1rem;
+  gap: 0.3rem;
+  justify-items: center;
+  border: 1px dashed var(--line);
+  border-radius: 18px 2px 18px 2px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.calibration-tap-zone:active {
+  background: rgba(239, 201, 110, 0.14);
+}
+
+.calibration-tap-zone span {
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+}
+
+.calibration-tap-zone small {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+#calibration-result {
+  margin: 1rem 0 0;
+}
+
 .pause-actions {
   margin-top: 2rem;
   flex-wrap: wrap;
