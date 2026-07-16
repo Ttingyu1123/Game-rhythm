@@ -47,12 +47,16 @@ npm run preview  # 預覽 production build
 
 **lane 填錯會靜默失效**：`addPulse` 只在 pulse 不存在時建立音符，所以 `addHold(beat, 'up', n)` 若該 pulse 實際是別的軌道，hold 只會登記在 `holds` map 的無主 key 上，map 階段找不到對應音符——不報錯、不中斷，該顆就只是普通 tap。憑記憶推 pattern 索引很容易猜錯 lane（2026-07 加三首新曲時 6 顆長按錯了 3 顆）。務必先 build 出譜面、從實際音符讀回 (beat, lane) 再寫 `addHold`，並在 `npm test` 後確認專家譜的 hold 數量與預期相符（`hold-charts` 只擋 <4，數量少一兩顆抓不到）。
 
-## 加一首新歌
+## 加一首新歌（完整同步清單，漏一項 CI 就紅）
 
-1. MP3 放 `assets/music/`（歌曲模組用 `new URL('...', import.meta.url).href` 引用，讓 Vite 雜湊複製）。
-2. `src/data/songs/` 新增模組（照 `swingCarnival.js`），填 BPM、首拍偏移、時長、譜面工廠。build 回呼可用 `addNote` / `addRange` / `addDouble` / `addHold`。
-3. `src/data/songCatalog.js` 匯入並加進 `SONG_CATALOG`。
-4. `npm test`——`song-catalog` / `new-song-charts` / `hold-charts` 測試會驗證譜面合法性。
+1. MP3 放 `assets/music/`，**底線命名**（`Neon_Mirage.mp3`；含空格的檔名在資產 URL 會編成 `%20`）。歌曲模組用 `new URL('...', import.meta.url).href` 引用，讓 Vite 雜湊複製。
+2. 先做音訊校準：BPM 允許非整數（微縮世界實測 99.95，用 100 全曲會漂 27ms 逼近 Marvelous 窗）；相位有半拍歧義時用背拍（小鼓在 2、4 拍）定案；時長 = ffprobe 值取兩位小數。
+3. `src/data/songs/` 新增模組（照 `swingCarnival.js`）；`src/data/songCatalog.js` 註冊。長按照上節「先 build 再 addHold」。
+4. 測試同步（都有寫死清單或曲數）：`tests/song-catalog.test.js`（expectedSongs + length）、`tests/new-song-charts.test.js`（EXPECTATIONS 一筆）、`tests/e2e_smoke.py`（expected_song_ids + 「N 首可遊玩」+ guide `.song` 數）、`tests/e2e_mobile.py`（count + 「N 首可遊玩」）、`tests/e2e_song_loading.py`（SONGS）、`tests/e2e_pwa_offline.py`（兩處 count）。
+   找漏網：`grep -rn "N 首\|== N" tests/ README.md guide.html`（N=舊曲數）。
+5. 文件同步：README（曲庫表、音符數表、檔案清單、正文的曲數 ×3）＋ **`guide.html` 新增該曲攻略區塊**（meta、音符/雙押表、重點段落秒數=首拍偏移+拍×60/BPM、`?song=` 練習連結）並更新建議挑戰順序。
+6. 連結：`links.mvUrl` / `links.musicUrl` 先 curl 驗證存在才填（music 頁 slug 以 `d:/VibeCoding/website/content/music/` 目錄名為準，注意 `-1` 類後綴）；沒有就整個省略，UI 會隱藏。
+7. `npm test` + 六支 e2e 對 preview build 跑過再推——CI 閘門會擋，但在本機先抓比較快。
 
 ## 部署
 
